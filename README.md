@@ -9,6 +9,12 @@
 
 Open source Matter over Thread firmware for the Shelly 1 Gen 4. Works natively with Apple Home, Google Home, Alexa, and Home Assistant — no WiFi, no cloud, no Shelly app, no subscription. **The Gen 4 ships with a thread radio - why not flash firmware that unlocks and uses it?**
 
+<p align="center">
+  <img src="docs/images/apple-home-device-info-v1.0.0.png" alt="Shelly 1 Gen 4 running this firmware in Apple Home, showing manufacturer, model, and firmware version" width="300">
+</p>
+
+*Shelly 1 Gen 4 running v1.0.0 of this firmware, commissioned to Apple Home. Manufacturer: AUTOMATOUS.IO, Model: Shelly 1 Gen4 MoT Light.*
+
 > This release is the **Light variant** — Matter `On/Off Light` device type with **latching relay behavior**. The relay holds whatever state you set (on or off) until you change it again. The Shelly appears as a light bulb icon in your smart home app, and the relay can switch any "set and hold" load.
 >
 > **Power-on behavior:** Defaults to **off** at power-up. A configurable power-on state (off, on, restore last state) using the Matter `StartUpOnOff` attribute is planned for a future release. In the meantime, use a smart home automation as a workaround (e.g., HA: "when this device comes online, turn it on").
@@ -279,7 +285,7 @@ Scan this QR code with the Home app, or enter the setup code manually:
 Setup code: 3497-011-2332
 ```
 
- > **Note for users coming from HomeKit Bridge / Home Assistant setups:** HomeKit's "reclassify as Fan / Light / Switch" option (available when bridging a stock Shelly through Home Assistant) is not available with native Matter devices. The Matter device type is declared by the firmware at flash time and cannot be changed in the Apple Home app. If you need a different device type, flash the corresponding [variant](#shelly-1-gen-4--matter-over-thread) when one is available.
+ >**Note for users coming from HomeKit Bridge / Home Assistant setups:** HomeKit's "reclassify as Fan / Light / Switch" option (available when bridging a stock Shelly through Home Assistant) is not available with native Matter devices. The Matter device type is declared by the firmware at flash time and cannot be changed in the Apple Home app. If you need a different device type, flash the corresponding [variant](#shelly-1-gen-4--matter-over-thread) when one is available.
 
 
 > ⚠️ This is the ESP-Matter SDK test setup code, used by all devices running this firmware. Once a device is commissioned to your Matter fabric, the setup code is no longer used for authentication — your Matter ecosystem manages credentials going forward. Multiple uncommissioned devices broadcasting the same setup code is why the commissioning instructions specify one device at a time.
