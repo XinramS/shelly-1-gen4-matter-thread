@@ -300,8 +300,8 @@ Hold the onboard relay button for **several seconds**. The device will reset and
  
 ## Known Issues / Roadmap
  
-- [ ] Status LED — onboard LED indication for BLE advertising, Thread connecting, and Thread connected states is not currently functional.
 - [ ] Configurable power-on state — implement Matter `StartUpOnOff` attribute so users can choose default behavior (off, on, restore last state) after power loss. Currently defaults to off.
+- [ ] Status LED — onboard LED indication for BLE advertising, Thread connecting, and Thread connected states is not currently functional.
 - [ ] Switch variant — momentary relay pulse (~500ms) for garage door openers, doorbells, gates, and similar pulse-activated devices. Separate firmware build since Matter device types are declared at compile time.
 - [ ] Thermal protection validation — the firmware reads ESP32-C6 die temperature and includes logic to cut off the relay above 75°C, but this has not been validated under controlled thermal conditions. Feature is implemented but not confirmed working as documented.
 
