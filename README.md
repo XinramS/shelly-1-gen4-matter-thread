@@ -45,7 +45,7 @@ Open source Matter over Thread firmware for the Shelly 1 Gen 4. Works natively w
  
 **Have a [Thread Border Router](#compatible-hubs), USB-UART adapter and 1.27mm to 2.54mm adapter? Flash and go.**
 
-1. [Download the latest release](../../releases/latest) — grab the `automatous-shelly-1-gen4-light-vX.Y.Z.bin` file from the assets.
+1. [Download the latest release](../../releases/latest) — grab the `automatous-io-shelly-1-gen4-light-vX.Y.Z.bin` file from the assets.
 2. [Enter flash mode](#enter-flash-mode) on your Shelly.
 3. [Back up your original firmware](#2-back-up-the-original-shelly-firmware) and flash the latest release with [ESPConnect](#flash-with-espconnect).
 4. [Commission](#commissioning) with your smart home app.
@@ -161,7 +161,7 @@ ESPConnect is a browser-based ESP32 flashing tool built on Web Serial. No instal
 1. In the left navigation, click **Flash Tools**.
 2. Click **Download Flash Backup**.
 3. ESPConnect will read the entire 8MB flash and download it as a `.bin` file. This takes 5–10 minutes at 115200 baud — do not disconnect or close the browser during the read.
-4. Rename the downloaded file to include the device's MAC address, e.g. `shelly1gen4-stock-AABBCCDDEEFF.bin`.
+4. Rename the downloaded file to include the device's MAC address, e.g. `shelly-1-gen4-stock-AABBCCDDEEFF.bin`.
 5. **Verify the file size is approximately 8 MB (8,388,608 bytes).** A smaller file means the read was incomplete or interrupted; redo the backup before proceeding.
 6. Store the backup somewhere safe. If you are flashing multiple Shellies, keep each MAC-labeled backup separate — they should not be interchanged.
 
@@ -232,7 +232,7 @@ Backup your original firmware:
 
 ```bash
 esptool.py --chip esp32c6 --port <PORT> --baud 115200 \
-  read_flash 0x0 0x800000 shelly1gen4-stock-<MAC>.bin
+  read_flash 0x0 0x800000 shelly-1-gen4-stock-<MAC>.bin
 ```
 This reads the entire 8 MB flash. Verify the resulting file is exactly 8,388,608 bytes before proceeding.
 
@@ -245,14 +245,14 @@ esptool.py --chip esp32c6 --port <PORT> --baud 115200 erase_flash
 
 ```bash
 esptool.py --chip esp32c6 --port <PORT> --baud 115200 \
-  write_flash 0x0 automatous-shelly1gen4-light-<VERSION>.bin
+  write_flash 0x0 automatous-io-shelly-1-gen4-light-<VERSION>.bin
 ```
  
 **Restore the original firmware:**
 
 ```bash
 esptool.py --chip esp32c6 --port <PORT> --baud 115200 \
-  write_flash 0x0 shelly1gen4-stock-<MAC>.bin
+  write_flash 0x0 shelly-1-gen4-stock-<MAC>.bin
 ```
 
 After flashing, remove the GPIO0–GND bridge and power-cycle the Shelly to boot the new firmware.
