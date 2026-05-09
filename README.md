@@ -45,7 +45,7 @@ Open source Matter over Thread firmware for the Shelly 1 Gen 4. Works natively w
  
 **Have a [Thread Border Router](#compatible-hubs), USB-UART adapter and 1.27mm to 2.54mm adapter? Flash and go.**
 
-1. [Download the latest release](../../releases/latest) — grab the `automatous-shelly1gen4-light-vX.Y.Z.bin` file from the assets.
+1. [Download the latest release](../../releases/latest) — grab the `automatous-shelly-1-gen4-light-vX.Y.Z.bin` file from the assets.
 2. [Enter flash mode](#enter-flash-mode) on your Shelly.
 3. [Back up your original firmware](#2-back-up-the-original-shelly-firmware) and flash the latest release with [ESPConnect](#flash-with-espconnect).
 4. [Commission](#commissioning) with your smart home app.
