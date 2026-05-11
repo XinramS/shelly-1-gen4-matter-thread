@@ -189,9 +189,11 @@ ESPConnect is a browser-based ESP32 flashing tool built on Web Serial. No instal
 
 #### 5. Verify the firmware is running
 
-After power-cycling, the Shelly is running your firmware and advertising for Matter commissioning over BLE. You can verify it's working in either of two ways:
+After power-cycling, the Shelly is running your firmware and advertising for Matter commissioning over BLE. You can verify it's working in three ways:
 
-**Easiest: try to add it from your smart home app.** Open Apple Home, Google Home, Alexa, or Home Assistant and start the "add device" flow. If the Shelly appears as a discoverable Matter device, the firmware is running correctly. Proceed to [Commissioning](#commissioning).
+**Easiest: look at the LED.** If you see a rapid blink (~200ms on, 200ms off), the firmware is running and advertising for Matter commissioning. You can proceed directly to [Commissioning](#commissioning). See the [Status LED Reference](#status-led-reference) for what each pattern means.
+
+**Try to add it from your smart home app.** Open Apple Home, Google Home, Alexa, or Home Assistant and start the "add device" flow. If the Shelly appears as a discoverable Matter device, the firmware is running correctly.
 
 **For developers / troubleshooting:** ESPConnect requires flash mode and cannot show normal application serial output easily from my experience with this project. Use a separate serial monitor instead:
 
