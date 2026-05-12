@@ -34,6 +34,7 @@ Open source Matter over Thread firmware for the Shelly 1 Gen4. Works natively wi
 - [Commissioning](#commissioning)
 - [Factory Reset](#factory-reset)
 - [Known Issues / Roadmap](#known-issues--roadmap)
+- [Roadmap Input](#roadmap-input)
 - [Building from Source](#building-from-source)
 - [Matter and Thread Certification](#matter-and-thread-certification)
 - [Contributing](#contributing)
@@ -158,6 +159,12 @@ Hold the onboard relay button for **several seconds**. The device will reset and
 - [ ] OTA updates (exploratory) - Currently users must reflash via USB-UART for updates.
 - [ ] Switch variant — momentary relay pulse (~500ms) for garage door openers, doorbells, gates, and similar pulse-activated devices. Separate firmware build since Matter device types are declared at compile time.
 - [ ] Thermal protection validation — the firmware reads ESP32-C6 die temperature and includes logic to cut off the relay above 75°C, but this has not been validated under controlled thermal conditions. Feature is implemented but not confirmed working as documented.
+
+---
+
+## Roadmap Input
+
+Have a firmware variant or feature you'd like to see prioritized? [Vote on the roadmap discussion](https://github.com/automatous-io/shelly-1-gen4-matter-thread/discussions) or open an issue with your use case.
 
 ---
 
