@@ -31,6 +31,7 @@ Open source Matter over Thread firmware for the Shelly 1 Gen4. Works natively wi
 - [Quick Start](#quick-start)
 - [Features](#features)
 - [Compatible Hubs](#compatible-hubs)
+- [Power Consumption](#power-consumption)
 - [Flashing](#flashing)
 - [Commissioning](#commissioning)
 - [Factory Reset](#factory-reset)
@@ -40,6 +41,7 @@ Open source Matter over Thread firmware for the Shelly 1 Gen4. Works natively wi
 - [Matter and Thread Certification](#matter-and-thread-certification)
 - [Contributing](#contributing)
 - [Why?](#why)
+- [About](#about)
 
 ---
 
@@ -62,7 +64,7 @@ Open source Matter over Thread firmware for the Shelly 1 Gen4. Works natively wi
 - ✅ Physical button toggle (onboard relay button)
 - ✅ External wall switch input (SW terminal)
 - ✅ State sync across all controllers
-- ✅ Thread Router mode — extends your Thread mesh network for other devices
+- ✅ Full Thread Device mode — extends your Thread mesh network for other devices
 - ✅ Factory reset via long press (onboard relay button)
 - ✅ Configurable power-on behavior via Matter StartUpOnOff attribute
 - ✅ Status LED indication (BLE advertising, Thread connecting, Thread connected)
@@ -85,6 +87,33 @@ Open source Matter over Thread firmware for the Shelly 1 Gen4. Works natively wi
 | Home Assistant (SkyConnect / Yellow) | ✅ | ✅ |
 | Amazon Echo (4th gen) | ✅ | Untested |
  
+---
+
+## Power Consumption
+
+A common assumption is that Matter over Thread devices use significantly less power than Matter over WiFi. That's true for Thread devices running in Sleepy End Device (SED) mode, but not for always-on devices like the current variant of this firmware.
+
+### Measured consumption at 12V DC input (Shelly itself, no load on relay)
+
+| Firmware                              | Relay Off | Relay On  |
+|---------------------------------------|-----------|-----------|
+| Automatous (v1.1.0, Matter over Thread) | 26 mA / 0.3W | 43 mA / 0.5W |
+| Stock Shelly (Matter over WiFi)       | 29 mA / 0.3W | 44 mA / 0.5W |
+
+Numbers are nearly identical because both radios stay continuously awake. The Shelly's connected load (light, fan, appliance) adds to the "Relay On" numbers in real installations.
+
+### Why no power savings on this variant?
+
+This firmware runs the Shelly as a **Thread Router** (Full Thread Device mode) so it actively participates in routing packets for other Thread devices on your mesh. Router mode requires the radio to stay awake to relay traffic, so the device doesn't get the sleep-mode power savings that Thread is known for.
+
+This design choice prioritizes mesh extension: each Shelly running this firmware adds a Thread router to your network, improving coverage, reliability, latency, and network capacity for other Thread devices nearby.
+
+### When does Thread save real power?
+
+Thread power savings come from devices running in **Sleepy End Device (SED) mode**, where the radio sleeps between brief wake-ups. Battery powered sensors, locks, and buttons typically run as SEDs and can last years on a coin cell.
+
+For an AC powered device like the Shelly installed at home, the savings of SED mode are less compelling. You have unlimited power available and you'd lose the mesh extension benefit.
+
 ---
 
 ## Flashing
@@ -218,9 +247,14 @@ Matter is an industry-standard protocol — your devices work with the ecosystem
 
 ### Why Thread instead of WiFi?
 
-Matter over Thread offers lower power consumption, lower latency, and mesh networking that doesn't depend on your WiFi. Devices on a Thread network can use any compatible Thread Border Router (iPhone 15 Pro+, HomePod mini, Apple TV 4K, Nest Hub 2nd gen, HA SkyConnect/Yellow) and continue to function even if your WiFi is down or congested.
+Matter over Thread offers several benefits over Matter over WiFi:
 
-I built this because I needed lower-power smart home devices in my Sprinter van where battery and solar capacity are limited and WiFi isn't always reliable. If you're an off-grid, low-power, or simply Thread-curious user, you might find this useful too.
+- **Mesh networking** — Thread devices form a self-healing mesh that doesn't depend on your WiFi infrastructure. Devices can use any compatible Thread Border Router (iPhone 15 Pro+, HomePod mini, Apple TV 4K, Nest Hub 2nd gen, HA SkyConnect/Yellow) and continue to function even if your WiFi is down or congested.
+- **Lower latency** for local commands like "toggle a light," compared to WiFi-based Matter.
+- **Reduced WiFi network burden** — every Matter over Thread device is one fewer device on your WiFi.
+- **Power consumption** — Thread devices CAN run with significantly lower power consumption than WiFi devices, but only when configured as Sleepy End Devices (SEDs). This firmware currently runs the Shelly as a Thread Router (Full Thread Device), which trades sleep-mode power savings for mesh extension benefits. See [Power Consumption](#power-consumption) for measured numbers and design rationale.
+
+I built this because I needed reliable smart home devices in my Sprinter van where WiFi isn't always available. Battery and solar capacity can be limiting factors in van life, which is why a future SED variant may be added to the roadmap, but this current variant prioritizes Thread mesh extension, that serves a broader audience. Vote on the [roadmap discussion](../../discussions) if this is your use case. If you're an off-grid, smart-home tinkerer, or Thread-curious user, you might find this useful too.
 
 ---
 
