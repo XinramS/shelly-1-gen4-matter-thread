@@ -34,6 +34,7 @@ Open source Matter over Thread firmware for the Shelly 1 Gen4. Works natively wi
 - [Power Consumption](#power-consumption)
 - [Flashing](#flashing)
 - [Commissioning](#commissioning)
+- [Troubleshooting](#troubleshooting)
 - [Factory Reset](#factory-reset)
 - [Known Issues / Roadmap](#known-issues--roadmap)
 - [Roadmap Input](#roadmap-input)
@@ -68,6 +69,7 @@ Open source Matter over Thread firmware for the Shelly 1 Gen4. Works natively wi
 - ✅ Factory reset via long press (onboard relay button)
 - ✅ Configurable power-on behavior via Matter StartUpOnOff attribute
 - ✅ Status LED indication (BLE advertising, Thread connecting, Thread connected)
+- ✅ Blink LED on command from any Matter controller using **Identify** for physical device identification
 
 > **Note:** This firmware is best suited for lights, fans, outlets, heaters, and other "set and hold" loads. It is **not** suitable for garage door openers, doorbells, gates, or any device that expects a brief contact closure — see the [variant note](#shelly-1-gen4--matter-over-thread) at the top for details on the future Switch variant.
 
@@ -97,7 +99,7 @@ A common assumption is that Matter over Thread devices use significantly less po
 
 | Firmware                              | Relay Off | Relay On  |
 |---------------------------------------|-----------|-----------|
-| Automatous (v1.1.0, Matter over Thread) | 26 mA / 0.3W | 43 mA / 0.5W |
+| Automatous (v1.2.0, Matter over Thread) | 26 mA / 0.3W | 43 mA / 0.5W |
 | Stock Shelly (Matter over WiFi)       | 29 mA / 0.3W | 44 mA / 0.5W |
 
 Numbers are nearly identical because both radios stay continuously awake. The Shelly's connected load (light, fan, appliance) adds to the "Relay On" numbers in real installations.
@@ -134,12 +136,13 @@ The flashing process takes about 15 minutes total: 5 minutes to wire up, 5–10 
 
 Follows Shelly's standard convention — solid LED means connected and working.
 
-| LED Pattern | Meaning |
-|---|---|
-| Off | Device starting up |
-| Rapid blink | BLE advertising — ready for commissioning |
-| Slow blink | Joining Thread network |
-| Solid on | Connected and operational |
+| LED Pattern | Timing | Meaning |
+|---|---|---|
+| Off | — | Device starting up |
+| Rapid blink | ~200ms on / 200ms off | BLE advertising — ready for commissioning |
+| Slow blink | ~1s on / 1s off | Joining Thread network |
+| Solid on | Continuous | Connected and operational |
+| Identify blink | 100ms on / 900ms off | Identify command active |
 
 ### Before Commissioning
 
@@ -149,11 +152,15 @@ Follows Shelly's standard convention — solid LED means connected and working.
 - Once commissioned, each device gets a unique identity on your network.
 - Disconnect UART from the Shelly and install wherever you need to.
 
+![Matter Setup QR Code](docs/images/matter_qrcode_20202021_3840.png)
+
+```
+Setup code: 3497-011-2332
+```
+
 ### Apple Home
 
-Scan this QR code with the Home app, or enter the setup code manually:
-
-![Matter Setup QR Code](docs/images/matter_qrcode_20202021_3840.png)
+Scan the QR code above with the Home app, or enter the setup code manually:
 
 1. Open the **Home** app.
 2. Tap **+** → **Add Accessory**.
@@ -161,9 +168,6 @@ Scan this QR code with the Home app, or enter the setup code manually:
 4. Press **Add Anyway** when prompted (this is expected — see [Matter and Thread Certification](#matter-and-thread-certification)).
 5. Name the device and place it in a room.
 
-```
-Setup code: 3497-011-2332
-```
 
  >**Note for users coming from HomeKit Bridge / Home Assistant setups:** HomeKit's "reclassify as Fan / Light / Switch" option (available when bridging a stock Shelly through Home Assistant) is not available with native Matter devices. The Matter device type is declared by the firmware at flash time and cannot be changed in the Apple Home app. If you need a different device type, flash the corresponding [variant](#shelly-1-gen4--matter-over-thread) when one is available.
 
@@ -178,8 +182,21 @@ Google Home and Alexa support Matter commissioning via their respective apps. Us
 
 ---
 
+## Troubleshooting
+
+### Commissioning hangs in Home Assistant
+
+If Home Assistant's Matter integration hangs during commissioning or shows "setting up" indefinitely, restart the Matter Server add-on:
+
+1. Settings → Apps → Matter Server → Restart
+2. Wait 60 seconds for full restart.
+3. [Factory reset the Shelly](#factory-reset).
+4. Retry commissioning.
+
+---
+
 ## Factory Reset
- 
+
 Hold the onboard relay button for **several seconds**. The device will reset and re-enter BLE commissioning mode. The LED will return to the **rapid blink** pattern from the [Status LED Reference](#status-led-reference), confirming the reset worked. Make sure to remove the device from whatever ecosystems you've added it to before re-commissioning.
 
 ---
