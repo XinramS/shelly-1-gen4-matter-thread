@@ -104,7 +104,14 @@ static void app_event_cb(const ChipDeviceEvent *event, intptr_t arg)
     case chip::DeviceLayer::DeviceEventType::kCommissioningWindowOpened:
         ESP_LOGI(TAG, "Commissioning window opened");
         MEMORY_PROFILER_DUMP_HEAP_STAT("commissioning window opened");
-        status_led_set_state(LED_STATE_BLE_ADVERTISING);
+        // Only show BLE advertising LED if device is truly uncommissioned.
+        // Commissioned devices may open windows for Multi-Admin pairing —
+        // in that case, preserve the connected state to avoid confusing users.
+        if (chip::Server::GetInstance().GetFabricTable().FabricCount() == 0) {
+            status_led_set_state(LED_STATE_BLE_ADVERTISING);
+        } else {
+            ESP_LOGI(TAG, "Device already commissioned, keeping current LED state");
+        }
         break;
 
     case chip::DeviceLayer::DeviceEventType::kCommissioningWindowClosed:
@@ -151,11 +158,37 @@ static void app_event_cb(const ChipDeviceEvent *event, intptr_t arg)
 }
 
 // This callback is invoked when clients interact with the Identify Cluster.
-// In the callback implementation, an endpoint can identify itself. (e.g., by flashing an LED or light).
+// Triggered by controllers (Apple Home, HA, Google Home) when a user wants
+// to physically identify which device is which. The LED enters an asymmetric
+// blink pattern for the duration of the Identify command, then restores.
 static esp_err_t app_identification_cb(identification::callback_type_t type, uint16_t endpoint_id, uint8_t effect_id,
                                        uint8_t effect_variant, void *priv_data)
 {
     ESP_LOGI(TAG, "Identification callback: type: %u, effect: %u, variant: %u", type, effect_id, effect_variant);
+
+    switch (type) {
+    case identification::callback_type_t::START:
+        ESP_LOGI(TAG, "Identify START - blinking status LED");
+        status_led_start_identify();
+        break;
+
+    case identification::callback_type_t::STOP:
+        ESP_LOGI(TAG, "Identify STOP - restoring status LED");
+        status_led_stop_identify();
+        break;
+
+    case identification::callback_type_t::EFFECT:
+        // TriggerEffect command - effect_id specifies which effect.
+        // For v1.2.0 we treat all effects as basic identify blink.
+        ESP_LOGI(TAG, "Identify EFFECT %u variant %u - using default blink", effect_id, effect_variant);
+        status_led_start_identify();
+        break;
+
+    default:
+        ESP_LOGW(TAG, "Unknown identification callback type: %u", type);
+        break;
+    }
+
     return ESP_OK;
 }
 

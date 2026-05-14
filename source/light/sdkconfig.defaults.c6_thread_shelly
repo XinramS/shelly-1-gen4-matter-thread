@@ -18,6 +18,12 @@ CONFIG_OPENTHREAD_LOG_LEVEL_DYNAMIC=n
 CONFIG_OPENTHREAD_LOG_LEVEL_NOTE=y
 CONFIG_OPENTHREAD_CLI=n
 
+# Thread device type — Full Thread Device (FTD), Router-eligible
+# This firmware intentionally runs as FTD to actively route Thread traffic
+# for other devices on the mesh, trading Sleepy End Device (SED) power
+# savings for mesh extension benefit. See README Power Consumption section.
+CONFIG_OPENTHREAD_FTD=y
+
 # Disable lwip ipv6 autoconfig
 CONFIG_LWIP_IPV6_AUTOCONFIG=n
 
@@ -53,5 +59,10 @@ CONFIG_ENABLE_CHIP_SHELL=y
 CONFIG_ESPTOOLPY_FLASHSIZE_8MB=y
 CONFIG_ESPTOOLPY_FLASHSIZE="8MB"
 
-#Firmware Details
+# Hardware version (numeric; matches Shelly PCB rev v0.1.2)
+# String "v0.1.2" set via CHIPProjectConfig.h
+CONFIG_DEFAULT_DEVICE_HARDWARE_VERSION=0
+
+# Hardware version (numeric; matches Shelly PCB rev v0.1.2)
+# String "v0.1.2" set via CHIPProjectConfig.h
 CONFIG_CHIP_PROJECT_CONFIG="main/CHIPProjectConfig.h"

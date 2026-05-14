@@ -12,6 +12,7 @@ static const char *TAG = "status_led";
 #define LED_OFF_LEVEL       1   // Active-low: pin HIGH = LED OFF
 
 static volatile led_state_t current_state = LED_STATE_OFF;
+static volatile led_state_t pre_identify_state = LED_STATE_OFF;
 
 static void status_led_task(void *arg)
 {
@@ -23,31 +24,38 @@ static void status_led_task(void *arg)
         uint32_t now = xTaskGetTickCount() * portTICK_PERIOD_MS;
 
         switch (state) {
-            case LED_STATE_OFF:
-                gpio_set_level(STATUS_LED_GPIO, LED_OFF_LEVEL);
-                break;
+        case LED_STATE_OFF:
+            gpio_set_level(STATUS_LED_GPIO, LED_OFF_LEVEL);
+            break;
 
-            case LED_STATE_BLE_ADVERTISING:
-                // Rapid blink: 200ms on, 200ms off (400ms period)
-                led_on = (now % 400) < 200;
-                gpio_set_level(STATUS_LED_GPIO, led_on ? LED_ON_LEVEL : LED_OFF_LEVEL);
-                break;
+        case LED_STATE_BLE_ADVERTISING:
+            // Rapid blink: 200ms on, 200ms off (400ms period)
+            led_on = (now % 400) < 200;
+            gpio_set_level(STATUS_LED_GPIO, led_on ? LED_ON_LEVEL : LED_OFF_LEVEL);
+            break;
 
-            case LED_STATE_THREAD_CONNECTING:
-                // Slow blink: 500ms on, 1500ms off (2000ms period)
-                led_on = (now % 2000) < 500;
-                gpio_set_level(STATUS_LED_GPIO, led_on ? LED_ON_LEVEL : LED_OFF_LEVEL);
-                break;
+        case LED_STATE_THREAD_CONNECTING:
+            // Slow blink: 500ms on, 1500ms off (2000ms period)
+            led_on = (now % 2000) < 500;
+            gpio_set_level(STATUS_LED_GPIO, led_on ? LED_ON_LEVEL : LED_OFF_LEVEL);
+            break;
 
-            case LED_STATE_THREAD_CONNECTED:
-                gpio_set_level(STATUS_LED_GPIO, LED_ON_LEVEL);
-                break;
+        case LED_STATE_THREAD_CONNECTED:
+            gpio_set_level(STATUS_LED_GPIO, LED_ON_LEVEL);
+            break;
 
-            case LED_STATE_FAULT:
-                // Very rapid blink: 100ms on, 100ms off (200ms period)
-                led_on = (now % 200) < 100;
-                gpio_set_level(STATUS_LED_GPIO, led_on ? LED_ON_LEVEL : LED_OFF_LEVEL);
-                break;
+        case LED_STATE_FAULT:
+            // Very rapid blink: 100ms on, 100ms off (200ms period)
+            led_on = (now % 200) < 100;
+            gpio_set_level(STATUS_LED_GPIO, led_on ? LED_ON_LEVEL : LED_OFF_LEVEL);
+            break;
+
+        case LED_STATE_IDENTIFY:
+            // Asymmetric blink: 100ms on, 900ms off (1000ms period)
+            // Distinct short flash with long gap — used for Matter Identify
+            led_on = (now % 1000) < 100;
+            gpio_set_level(STATUS_LED_GPIO, led_on ? LED_ON_LEVEL : LED_OFF_LEVEL);
+            break;
         }
 
         vTaskDelay(pdMS_TO_TICKS(period_ms));
@@ -88,5 +96,28 @@ void status_led_set_state(led_state_t state)
     if (state != current_state) {
         ESP_LOGI(TAG, "LED state change: %d -> %d", current_state, state);
         current_state = state;
+    }
+}
+
+void status_led_start_identify(void)
+{
+    // Only save state if we're not already identifying
+    // (prevents losing the original state if Identify is re-triggered)
+    if (current_state != LED_STATE_IDENTIFY) {
+        pre_identify_state = current_state;
+        ESP_LOGI(TAG, "Identify start - saving state %d, entering identify", pre_identify_state);
+    } else {
+        ESP_LOGI(TAG, "Identify already active - extending");
+    }
+    current_state = LED_STATE_IDENTIFY;
+}
+
+void status_led_stop_identify(void)
+{
+    if (current_state == LED_STATE_IDENTIFY) {
+        ESP_LOGI(TAG, "Identify stop - restoring state %d", pre_identify_state);
+        current_state = pre_identify_state;
+    } else {
+        ESP_LOGI(TAG, "Identify stop called but not identifying (state=%d)", current_state);
     }
 }
