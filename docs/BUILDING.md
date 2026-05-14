@@ -2,13 +2,14 @@
 
 [← Back to README](../README.md) · [Report an issue](../../../issues/new)
 
-This guide covers building the Automatous Matter over Thread firmware from source. If you just want to flash pre-built firmware, see the [Flashing Guide](FLASHING.md) instead — you don't need to build anything.
+This guide covers building the Automatous firmware from source. If you just want to flash pre-built firmware, see the [Flashing Guide](FLASHING.md) instead — you don't need to build anything.
 
 ---
 
 ## Contents
 
 - [Requirements](#requirements)
+- [Repository structure](#repository-structure)
 - [Setup](#setup)
 - [Build](#build)
 - [Merge bin files](#merge-bin-files)
@@ -23,7 +24,23 @@ This guide covers building the Automatous Matter over Thread firmware from sourc
 - **macOS or Linux** — Windows build path is not currently tested
 
 Throughout these commands, replace:
-- `<VERSION>` with the firmware release version (e.g. `v1.0.0`)
+- `<VERSION>` with the firmware release version (e.g. `v1.2.0`)
+
+---
+
+## Repository structure
+
+The repository organizes firmware by product and variant:
+
+```
+source/
+└── shelly-1-gen4/
+    ├── light/           # Matter On/Off Light (latching relay)
+    ├── light-switch/    # Matter On/Off Light Switch (planned, contributor expressed interest)
+    └── switch/          # Matter On/Off with momentary pulse (planned)
+```
+
+Each variant is a self-contained ESP-IDF project. Build commands run from inside the variant directory. The examples below build the `light` variant; to build a different variant, substitute its directory in the `cd` command.
 
 ---
 
@@ -44,7 +61,7 @@ Clone the repository and build the light variant:
 
 ```bash
 git clone https://github.com/automatous-io/shelly-1-gen4-matter-thread.git
-cd shelly-1-gen4-matter-thread/source/light
+cd shelly-1-gen4-matter-thread/source/shelly-1-gen4/light
 
 # source from wherever you installed esp-idf and esp-matter
 # the locations below are examples — adjust to match your install paths
