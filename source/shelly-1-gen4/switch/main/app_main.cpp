@@ -235,6 +235,7 @@ extern "C" void app_main()
 
     MEMORY_PROFILER_DUMP_HEAP_STAT("node created");
 
+    // Create the On/Off Light device type. This is connected to the Shelly's Relay
     on_off_light::config_t light_config;
     light_config.on_off.on_off = DEFAULT_POWER;
 
@@ -244,6 +245,15 @@ extern "C" void app_main()
 
     light_endpoint_id = endpoint::get_id(on_off_endpoint);
     ESP_LOGI(TAG, "Light created with endpoint_id %d", light_endpoint_id);
+
+
+    // Create the On/Off Light Switch device type. This is connected to the Shelly's SW Input
+    on_off_light_switch::config_t switch_config;
+    endpoint_t *switch_endpoint = on_off_switch::create(node, &switch_config, ENDPOINT_FLAG_NONE, button_handle);
+    ABORT_APP_ON_FAILURE(on_off_endpoint != nullptr, ESP_LOGE(TAG, "Failed to create on_off_light endpoint"));
+
+    switch_endpoint_id = endpoint::get_id(switch_endpoint);
+    ESP_LOGI(TAG, "Switch created with endpoint_id %d", switch_endpoint_id);
 
 #if CHIP_DEVICE_CONFIG_ENABLE_THREAD && CHIP_DEVICE_CONFIG_ENABLE_WIFI_STATION
     // Enable secondary network interface
