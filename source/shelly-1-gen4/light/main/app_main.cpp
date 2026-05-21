@@ -183,7 +183,7 @@ static esp_err_t app_identification_cb(identification::callback_type_t type, uin
 
     case identification::callback_type_t::EFFECT:
         // TriggerEffect command - effect_id specifies which effect.
-        // For v1.2.0 we treat all effects as basic identify blink.
+        // All effects currently map to the basic identify blink.
         ESP_LOGI(TAG, "Identify EFFECT %u variant %u - using default blink", effect_id, effect_variant);
         status_led_start_identify();
         break;
@@ -225,11 +225,10 @@ extern "C" void app_main()
 
     MEMORY_PROFILER_DUMP_HEAP_STAT("Bootup");
 
-     // Initialize subsystems. Order matters for safety:
-     // relay first so the GPIO is in known-safe state before anything else.
-     // thermal second so overtemp protection is active as early as possible.
-     // switch_input and button last for user-facing inputs.
-     
+    // Initialize subsystems. Order matters for safety:
+    // relay first so the GPIO is in known-safe state before anything else.
+    // thermal second so overtemp protection is active as early as possible.
+    // switch_input and button last for user-facing inputs.
     relay_init();
     thermal_init();
     switch_input_init();
