@@ -19,7 +19,11 @@
 
 #include <app_priv.h>
 #include <app_reset.h>
-#include "status_led.h"
+#include <status_led.h>
+#include <button.h>
+#include <thermal.h>
+#include <switch_input.h>
+#include <relay.h>
 #if CHIP_DEVICE_CONFIG_ENABLE_THREAD
 #include <platform/ESP32/OpenthreadLauncher.h>
 #endif
@@ -105,8 +109,8 @@ static void app_event_cb(const ChipDeviceEvent *event, intptr_t arg)
         ESP_LOGI(TAG, "Commissioning window opened");
         MEMORY_PROFILER_DUMP_HEAP_STAT("commissioning window opened");
         // Only show BLE advertising LED if device is truly uncommissioned.
-        // Commissioned devices may open windows for Multi-Admin pairing —
-        // in that case, preserve the connected state to avoid confusing users.
+        // Commissioned devices may open windows for Multi-Admin pairing.
+        // In that case, preserve the connected state to avoid confusing users.
         if (chip::Server::GetInstance().GetFabricTable().FabricCount() == 0) {
             status_led_set_state(LED_STATE_BLE_ADVERTISING);
         } else {
@@ -124,7 +128,7 @@ static void app_event_cb(const ChipDeviceEvent *event, intptr_t arg)
             chip::CommissioningWindowManager  &commissionMgr = chip::Server::GetInstance().GetCommissioningWindowManager();
             constexpr auto kTimeoutSeconds = chip::System::Clock::Seconds16(k_timeout_seconds);
             if (!commissionMgr.IsCommissioningWindowOpen()) {
-                /* After removing last fabric, re-open commissioning window via DNS-SD */
+                // After removing last fabric, re-open commissioning window via DNS-SD
                 CHIP_ERROR err = commissionMgr.OpenBasicCommissioningWindow(kTimeoutSeconds,
                                                                             chip::CommissioningWindowAdvertisement::kDnssdOnly);
                 if (err != CHIP_NO_ERROR) {
@@ -179,7 +183,7 @@ static esp_err_t app_identification_cb(identification::callback_type_t type, uin
 
     case identification::callback_type_t::EFFECT:
         // TriggerEffect command - effect_id specifies which effect.
-        // For v1.2.0 we treat all effects as basic identify blink.
+        // All effects currently map to the basic identify blink.
         ESP_LOGI(TAG, "Identify EFFECT %u variant %u - using default blink", effect_id, effect_variant);
         status_led_start_identify();
         break;
@@ -213,20 +217,25 @@ extern "C" void app_main()
 {
     esp_err_t err = ESP_OK;
 
-    /* Initialize the ESP NVS layer */
+    // Initialize the ESP NVS layer
     nvs_flash_init();
 
-    /* Initialize status LED */
+    // Initialize status LED
     status_led_init();
 
     MEMORY_PROFILER_DUMP_HEAP_STAT("Bootup");
 
-    /* Initialize driver */
-    app_driver_handle_t light_handle = app_driver_light_init();
-    app_driver_handle_t button_handle = app_driver_button_init();
+    // Initialize subsystems. Order matters for safety:
+    // relay first so the GPIO is in known-safe state before anything else.
+    // thermal second so overtemp protection is active as early as possible.
+    // switch_input and button last for user-facing inputs.
+    relay_init();
+    thermal_init();
+    switch_input_init();
+    shelly_button_handle_t button_handle = button_init();
     app_reset_button_register(button_handle);
 
-    /* Create a Matter node and add the mandatory Root Node device type on endpoint 0 */
+    // Create a Matter node and add the mandatory Root Node device type on endpoint 0
     node::config_t node_config;
 
     // node handle can be used to add/modify other endpoints.
@@ -239,8 +248,8 @@ extern "C" void app_main()
     light_config.on_off.on_off = DEFAULT_POWER;
 
     // endpoint handles can be used to add/modify clusters.
-    endpoint_t *on_off_endpoint = on_off_light::create(node, &light_config, ENDPOINT_FLAG_NONE, light_handle);
-    ABORT_APP_ON_FAILURE(on_off_endpoint != nullptr, ESP_LOGE(TAG, "Failed to create on_off_light endpoint"));
+    endpoint_t *endpoint = on_off_light::create(node, &light_config, ENDPOINT_FLAG_NONE, nullptr);
+    ABORT_APP_ON_FAILURE(endpoint != nullptr, ESP_LOGE(TAG, "Failed to create on_off_light endpoint"));
 
     light_endpoint_id = endpoint::get_id(on_off_endpoint);
     ESP_LOGI(TAG, "Light created with endpoint_id %d", light_endpoint_id);
@@ -253,7 +262,7 @@ extern "C" void app_main()
 #endif
 
 #if CHIP_DEVICE_CONFIG_ENABLE_THREAD
-    /* Set OpenThread platform config */
+    // Set OpenThread platform config
     esp_openthread_platform_config_t config = {
         .radio_config = ESP_OPENTHREAD_DEFAULT_RADIO_CONFIG(),
         .host_config = ESP_OPENTHREAD_DEFAULT_HOST_CONFIG(),
@@ -271,13 +280,13 @@ extern "C" void app_main()
 #endif
 #endif // CONFIG_ENABLE_SET_CERT_DECLARATION_API
 
-    /* Matter start */
+    // Matter start
     err = esp_matter::start(app_event_cb);
     ABORT_APP_ON_FAILURE(err == ESP_OK, ESP_LOGE(TAG, "Failed to start Matter, err:%d", err));
 
     MEMORY_PROFILER_DUMP_HEAP_STAT("matter started");
 
-    /* Starting driver with default values */
+    // Starting driver with default values
     app_driver_light_set_defaults(light_endpoint_id);
 
 #if CONFIG_ENABLE_ENCRYPTED_OTA
