@@ -28,6 +28,7 @@ using namespace esp_matter;
 
 static const char *TAG = "app_driver";
 extern uint16_t light_endpoint_id;
+extern uint16_t switch_endpoint_id;
 
 // Shelly 1 Gen4 GPIO assignments
 #define RELAY_GPIO          GPIO_NUM_5
@@ -102,10 +103,6 @@ static void app_driver_switch_task(void *arg)
 
             // Drain any additional events during debounce
             while (xQueueReceive(switch_evt_queue, &io_num, 0) == pdTRUE) {}
-
-            uint16_t endpoint_id = switch_endpoint_id;
-            uint32_t cluster_id = OnOff::Id;
-            uint32_t attribute_id = OnOff::Attributes::OnOff::Id;
 
             ESP_LOGI(TAG, "SW input changed. Sending Toggle command");
             client::request_handle_t req_handle;

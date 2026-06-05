@@ -40,6 +40,7 @@ using namespace chip::DeviceLayer;
 
 static const char *TAG = "app_main";
 uint16_t light_endpoint_id = 0;
+uint16_t switch_endpoint_id = 0;
 
 using namespace esp_matter;
 using namespace esp_matter::attribute;
@@ -246,10 +247,9 @@ extern "C" void app_main()
     light_endpoint_id = endpoint::get_id(on_off_endpoint);
     ESP_LOGI(TAG, "Light created with endpoint_id %d", light_endpoint_id);
 
-
     // Create the On/Off Light Switch device type. This is connected to the Shelly's SW Input
     on_off_light_switch::config_t switch_config;
-    endpoint_t *switch_endpoint = on_off_switch::create(node, &switch_config, ENDPOINT_FLAG_NONE, button_handle);
+    endpoint_t *switch_endpoint = on_off_light_switch::create(node, &switch_config, ENDPOINT_FLAG_NONE, button_handle);
     ABORT_APP_ON_FAILURE(on_off_endpoint != nullptr, ESP_LOGE(TAG, "Failed to create on_off_light endpoint"));
 
     switch_endpoint_id = endpoint::get_id(switch_endpoint);

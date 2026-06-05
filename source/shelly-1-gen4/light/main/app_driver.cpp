@@ -28,6 +28,7 @@ using namespace esp_matter;
 
 static const char *TAG = "app_driver";
 extern uint16_t light_endpoint_id;
+extern uint16_t switch_endpoint_id;
 
 // Shelly 1 Gen4 GPIO assignments
 #define RELAY_GPIO          GPIO_NUM_5
