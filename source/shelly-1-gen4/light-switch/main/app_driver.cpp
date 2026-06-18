@@ -9,10 +9,14 @@
 #include <esp_log.h>
 #include <stdlib.h>
 #include <string.h>
+#include <inttypes.h>
 
 #include <esp_matter.h>
+#include <esp_matter_client.h>
 #include <app_priv.h>
 #include <common_macros.h>
+
+#include <lib/core/Optional.h>
 
 #include <driver/gpio.h>
 #include <driver/temperature_sensor.h>
@@ -91,6 +95,52 @@ static void IRAM_ATTR app_driver_switch_isr(void *arg)
 {
     uint32_t gpio_num = SWITCH_INPUT_GPIO;
     xQueueSendFromISR(switch_evt_queue, &gpio_num, NULL);
+}
+
+// Invoked by the binding manager once the bound peer's CASE session is ready.
+// This is where the queued command is actually put on the wire.
+static void send_command_success_callback(void *context, const ConcreteCommandPath &command_path,
+                                          const chip::app::StatusIB &status, TLVReader *response_data)
+{
+    ESP_LOGI(TAG, "Bound command sent successfully");
+}
+
+static void send_command_failure_callback(void *context, CHIP_ERROR error)
+{
+    ESP_LOGE(TAG, "Bound command send failed: %" CHIP_ERROR_FORMAT, error.Format());
+}
+
+// Unicast binding callback: build and send the invoke command to the bound peer.
+static void app_driver_client_callback(client::peer_device_t *peer_device, client::request_handle_t *req_handle,
+                                       void *priv_data)
+{
+    if (req_handle->type != esp_matter::client::INVOKE_CMD) {
+        return;
+    }
+    if (req_handle->command_path.mClusterId != OnOff::Id) {
+        ESP_LOGE(TAG, "Unsupported cluster 0x%08" PRIx32 " for bound command", req_handle->command_path.mClusterId);
+        return;
+    }
+    // OnOff Toggle/On/Off take no fields, so the command data is an empty object.
+    const char *command_data_str = "{}";
+    client::interaction::invoke::send_request(NULL, peer_device, req_handle->command_path, command_data_str,
+                                              send_command_success_callback, send_command_failure_callback,
+                                              chip::NullOptional);
+}
+
+// Group binding callback: send the command to the bound group.
+static void app_driver_client_group_callback(uint8_t fabric_index, client::request_handle_t *req_handle,
+                                             void *priv_data)
+{
+    if (req_handle->type != esp_matter::client::INVOKE_CMD) {
+        return;
+    }
+    if (req_handle->command_path.mClusterId != OnOff::Id) {
+        ESP_LOGE(TAG, "Unsupported cluster 0x%08" PRIx32 " for bound group command", req_handle->command_path.mClusterId);
+        return;
+    }
+    const char *command_data_str = "{}";
+    client::interaction::invoke::send_group_request(fabric_index, req_handle->command_path, command_data_str);
 }
 
 static void app_driver_switch_task(void *arg)
@@ -194,11 +244,15 @@ app_driver_handle_t app_driver_light_init()
     switch_evt_queue = xQueueCreate(10, sizeof(uint32_t));
     xTaskCreate(app_driver_switch_task, "switch_task", 4096, NULL, 10, NULL);
 
+    // Register the binding dispatch callbacks. Without these, client::cluster_update()
+    // resolves the bound peer and opens a CASE session but never emits the command.
+    client::set_request_callback(app_driver_client_callback, app_driver_client_group_callback, NULL);
+
     gpio_config_t switch_cfg = {
         .pin_bit_mask = (1ULL << SWITCH_INPUT_GPIO),
         .mode = GPIO_MODE_INPUT,
         .pull_up_en = GPIO_PULLUP_DISABLE,
-        .pull_down_en = GPIO_PULLDOWN_DISABLE,
+        .pull_down_en = GPIO_PULLDOWN_ENABLE,
         .intr_type = GPIO_INTR_ANYEDGE,
     };
     gpio_config(&switch_cfg);
