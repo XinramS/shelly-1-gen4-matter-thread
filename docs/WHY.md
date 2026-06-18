@@ -56,6 +56,7 @@ This project began because reliable smart home devices were needed in a Sprinter
 
 - [README](../README.md) — project overview and quick start
 - [Flashing Guide](FLASHING.md) — wiring, backing up stock firmware, and flashing
+- [Reversibility](REVERSIBILITY.md) — warranty, factory keys, and how reversible flashing is
 - [Commissioning](COMMISSIONING.md) — pairing the device and reading the status LED
 - [Power Consumption](POWER.md) — measured draw and the Thread router design choice
 - [Building from Source](BUILDING.md) — compiling the firmware yourself

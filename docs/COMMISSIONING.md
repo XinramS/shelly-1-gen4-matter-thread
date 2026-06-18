@@ -124,6 +124,7 @@ Hold the onboard relay button for several seconds. The device resets and re-ente
 - [README](../README.md) — project overview and quick start
 - [Why Matter over Thread](WHY.md) — the rationale for Matter over Thread
 - [Flashing Guide](FLASHING.md) — wiring, backing up stock firmware, and flashing
+- [Reversibility](REVERSIBILITY.md) — warranty, factory keys, and how reversible flashing is
 - [Power Consumption](POWER.md) — measured draw and the Thread router design choice
 - [Building from Source](BUILDING.md) — compiling the firmware yourself
 - [Certification](CERTIFICATION.md) — uncertified status and test credentials

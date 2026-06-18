@@ -6,7 +6,7 @@
 [![Downloads](https://img.shields.io/github/downloads/automatous-io/shelly-1-gen4-matter-thread/total)](../../releases)
 [![Stars](https://img.shields.io/github/stars/automatous-io/shelly-1-gen4-matter-thread?style=social)](../../stargazers)
 
-> **⚠️ Disclaimer.** Flashing third-party firmware modifies your device and may void your warranty. Incorrect flashing can brick your device. Always back up your original firmware before proceeding. You assume all responsibility for any damage, data loss, or device failure. This project is not affiliated with Shelly, Allterco Robotics, CSA, or Espressif Systems.
+> **⚠️ Disclaimer.** Installing this firmware voids your Shelly warranty, and Shelly cannot provide technical support for a device running third-party code. It removes the factory keys that enable Shelly Cloud and official OTA updates, so treat flashing as one-way unless you keep the full-chip backup you make before flashing. Incorrect flashing can brick your device, so always back up your original firmware before proceeding. You assume all responsibility for any damage, data loss, or device failure. This project is not affiliated with Shelly, Allterco Robotics, CSA, or Espressif Systems. See [Warranty, Factory Keys, and Reversibility](docs/REVERSIBILITY.md).
 
 The first third-party open source Matter over Thread firmware for the Shelly 1 Gen4. It works natively with Apple Home, Google Home, Alexa, and Home Assistant. No Shelly app, no cloud, no WiFi. The Gen4's ESP32-C6 has an 802.15.4 radio that stock firmware uses for Zigbee. Stock firmware also supports Matter over WiFi. This firmware reconfigures the 802.15.4 radio to run Thread, which unlocks Matter over Thread.
 
@@ -59,7 +59,7 @@ The Light variant is the flagship release and the one pictured above. Power-on b
 
 The full flashing process takes about 15 minutes. See the [Flashing Guide](docs/FLASHING.md) for wiring diagrams, photos, safety warnings, and a command-line path.
 
-It is fully reversible. As long as you back up your stock firmware before flashing (step 3), you can restore the Shelly to its factory state at any time. Stock restore is [verified working](docs/FLASHING.md#restoring-stock-firmware).
+It is fully reversible with the UART flashing method this guide uses. UART captures a full-chip backup of the stock firmware before flashing (step 3), including the factory keys that enable Shelly Cloud and OTA, so you can restore the device to factory state at any time with cloud and OTA intact. Stock restore is [verified working](docs/FLASHING.md#restoring-stock-firmware). That full-chip backup can only be captured over UART. Without it, flashing is one-way.
 
 > ⚠️ **Before you start.** Never connect the Shelly to AC mains while flashing. The programming header is not galvanically isolated from mains circuitry. See [the full safety warning](docs/FLASHING.md#safety-warning).
 
@@ -100,6 +100,7 @@ Everything is in [`docs/`](docs/). A typical path is to read the [Flashing Guide
 
 - [Why Matter over Thread](docs/WHY.md) — the rationale for Matter over Thread
 - [Flashing Guide](docs/FLASHING.md) — wiring, backing up stock firmware, and flashing
+- [Reversibility](docs/REVERSIBILITY.md) — warranty, factory keys, and how reversible flashing is
 - [Commissioning](docs/COMMISSIONING.md) — pairing the device and reading the status LED
 - [Power Consumption](docs/POWER.md) — measured draw and the Thread router design choice
 - [Building from Source](docs/BUILDING.md) — compiling the firmware yourself
@@ -137,7 +138,7 @@ The Shelly 1 Gen4's ESP32-C6 can run Thread, but stock firmware never uses it th
 
 ## About
 
-This firmware was created from inside an old Mercedes Sprinter T1N named Mabel, parked somewhere in the USA.
+This firmware was created from inside an old Dodge Sprinter T1N named Mabel, parked somewhere in the USA.
 
 I put in many sleepless nights obsessing over Thread support, which kickstarted me into writing custom firmware and testing with ESP-IDF, ESP-Matter, and ESPHome examples. That meant figuring out Shelly's custom partition offsets, the GPIO quirks specific to this device, and getting Matter over Thread commissioning working on non-devkit hardware.
 

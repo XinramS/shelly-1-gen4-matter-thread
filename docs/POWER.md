@@ -48,6 +48,7 @@ For an AC powered device like the Shelly installed at home, the savings of Sleep
 - [README](../README.md) — project overview and quick start
 - [Why Matter over Thread](WHY.md) — the rationale for Matter over Thread
 - [Flashing Guide](FLASHING.md) — wiring, backing up stock firmware, and flashing
+- [Reversibility](REVERSIBILITY.md) — warranty, factory keys, and how reversible flashing is
 - [Commissioning](COMMISSIONING.md) — pairing the device and reading the status LED
 - [Building from Source](BUILDING.md) — compiling the firmware yourself
 - [Certification](CERTIFICATION.md) — uncertified status and test credentials

@@ -17,6 +17,8 @@ This guide covers flashing the Automatous Matter over Thread firmware onto a She
 
 > 💡 **Bench testing note.** The Shelly can be fully flashed, commissioned, and tested over the USB-UART 3.3V line, but **the relay will not physically click at 3.3V**. The relay coil needs full mains voltage to actuate. Bench testing over 3.3V verifies firmware flash success, Matter commissioning, GPIO behavior, LED states, and that your smart home app can send commands. You will not hear the relay click during bench testing. This is expected, not a bug. Verify everything else works first, then install with confidence and skip the headache of pulling the Shelly back out of the wall if something didn't work.
 
+> ⚠️ **Warranty and responsibility.** Installing this firmware voids your Shelly warranty, and Shelly cannot provide technical support for a device running third-party code. You assume all responsibility for any damage, data loss, or device failure. Flashing also removes the factory keys that enable Shelly Cloud and official OTA updates, so treat it as one-way unless you keep the full-chip backup you make before flashing. See [Warranty, Factory Keys, and Reversibility](REVERSIBILITY.md) for the detail.
+
 
 ## Contents
 
@@ -107,6 +109,8 @@ ESPConnect is a browser-based ESP32 flashing tool built on Web Serial. No instal
 
 > This step is essential. The backup is the only way to restore your device to its factory state. **Do not skip it**.
 
+> The full 8MB image includes the device's factory-provisioned keys, which enable Shelly Cloud and official OTA updates. This is why a complete backup is what makes restoration possible: a partial backup cannot bring those keys back, and without them the change is one-way.
+
 1. In the left navigation, click **Flash Tools**.
 2. Click **Download Flash Backup**.
 3. ESPConnect will read the entire 8MB flash and download it as a `.bin` file. This takes 5–10 minutes at 115200 baud. Do not disconnect or close the browser during the read.
@@ -153,7 +157,7 @@ You should see boot logs followed by `Commissioning Window Opened`. This confirm
 
 ## Restoring stock firmware
 
-> ✅ **Stock restore is verified working.** Your Shelly will create its `shelly-XXXXXX` setup AP, pair with the Shelly app, and behave identically to a factory unit.
+> ✅ **Stock restore is verified working, including cloud and OTA.** A full-chip restore returns the device to factory state with Shelly Cloud connectivity and official OTA updates intact. Your Shelly will create its `shelly-XXXXXX` setup AP, pair with the Shelly app, and behave identically to a factory unit. This recovery depends on having the full 8MB backup. For the test record and the reasoning, see [Warranty, Factory Keys, and Reversibility](REVERSIBILITY.md#uart-path-verified-recoverable).
 
 If you want to revert to the original Shelly firmware:
 
@@ -218,6 +222,7 @@ After flashing, remove the GPIO0–GND bridge and power-cycle the Shelly to boot
 
 - [README](../README.md) — project overview and quick start
 - [Why Matter over Thread](WHY.md) — the rationale for Matter over Thread
+- [Reversibility](REVERSIBILITY.md) — warranty, factory keys, and how reversible flashing is
 - [Commissioning](COMMISSIONING.md) — pairing the device and reading the status LED
 - [Power Consumption](POWER.md) — measured draw and the Thread router design choice
 - [Building from Source](BUILDING.md) — compiling the firmware yourself
