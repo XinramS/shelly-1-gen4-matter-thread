@@ -31,7 +31,7 @@ using namespace esp_matter;
 
 // Defined in app_main.cpp. Used to know which Matter endpoint's OnOff
 // attribute to update on thermal fault.
-extern uint16_t light_endpoint_id;
+extern uint16_t relay_endpoint_id;
 
 static const char *TAG = "thermal";
 
@@ -83,7 +83,7 @@ static void thermal_check(void)
                 uint32_t cluster_id = OnOff::Id;
                 uint32_t attribute_id = OnOff::Attributes::OnOff::Id;
                 esp_matter_attr_val_t val = esp_matter_bool(false);
-                attribute::update(light_endpoint_id, cluster_id, attribute_id, &val);
+                attribute::update(relay_endpoint_id, cluster_id, attribute_id, &val);
             }
         }
     } else {

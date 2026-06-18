@@ -30,8 +30,8 @@ if(NOT DEFINED ENV{ESP_MATTER_DEVICE_PATH})
     endif()
 endif(NOT DEFINED ENV{ESP_MATTER_DEVICE_PATH})
 
-set(PROJECT_VER "1.2.1")
-set(PROJECT_VER_NUMBER 2)
+set(PROJECT_VER "1.0.0")
+set(PROJECT_VER_NUMBER 0)
 
 set(ESP_MATTER_PATH $ENV{ESP_MATTER_PATH})
 set(MATTER_SDK_PATH ${ESP_MATTER_PATH}/connectedhomeip/connectedhomeip)
@@ -48,12 +48,12 @@ set(EXTRA_COMPONENT_DIRS
     "${ESP_MATTER_PATH}/device_hal/device"
     ${extra_components_dirs_append})
 
-project(light)
+project(opener)
 
 # WARNING: This is just an example for using key for decrypting the encrypted OTA image
 # Please do not use it as is.
 if(CONFIG_ENABLE_ENCRYPTED_OTA)
-    target_add_binary_data(light.elf "esp_image_encryption_key.pem" TEXT)
+    target_add_binary_data(opener.elf "esp_image_encryption_key.pem" TEXT)
 endif()
 
 if(CONFIG_IDF_TARGET_ESP32C2)

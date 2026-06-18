@@ -30,6 +30,18 @@
 // Default attribute values used during initialization
 #define DEFAULT_POWER false
 
+// OPENER_PULSE_MS: how long the relay stays energized per trigger before
+// auto-reverting to OFF (via relay_set, preserving the thermal-lockout
+// invariant).
+#define OPENER_PULSE_MS 500
+
+// CONTACT_OPEN_IS_HIGH: maps the GPIO10 level to door state.
+//   1 => HIGH = OPEN, LOW  = CLOSED
+//   0 => LOW  = OPEN, HIGH = CLOSED
+// 0 suits a standard normally open reed (magnet near = contacts closed =
+// door closed). Use 1 for a normally closed reed, or if it reads inverted.
+#define CONTACT_OPEN_IS_HIGH 0
+
 typedef void *app_driver_handle_t;
 
 // Driver Update
@@ -48,7 +60,7 @@ typedef void *app_driver_handle_t;
 esp_err_t app_driver_attribute_update(app_driver_handle_t driver_handle, uint16_t endpoint_id, uint32_t cluster_id,
                                       uint32_t attribute_id, esp_matter_attr_val_t *val);
 
-// Set defaults for light driver
+// Set defaults for the relay driver
 //
 // Set the attribute drivers to their default values from the created data model.
 //
@@ -57,7 +69,7 @@ esp_err_t app_driver_attribute_update(app_driver_handle_t driver_handle, uint16_
 // @return ESP_OK on success.
 // @return error in case of failure.
 
-esp_err_t app_driver_light_set_defaults(uint16_t endpoint_id);
+esp_err_t app_driver_relay_set_defaults(uint16_t endpoint_id);
 
 #if CHIP_DEVICE_CONFIG_ENABLE_THREAD
 #define ESP_OPENTHREAD_DEFAULT_RADIO_CONFIG()                                           \

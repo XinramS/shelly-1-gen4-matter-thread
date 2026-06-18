@@ -34,7 +34,7 @@
 #include <status_led.h>
 #include <button.h>
 #include <thermal.h>
-#include <switch_input.h>
+#include <contact_sensor.h>
 #include <relay.h>
 #if CHIP_DEVICE_CONFIG_ENABLE_THREAD
 #include <platform/ESP32/OpenthreadLauncher.h>
@@ -55,7 +55,10 @@ using namespace chip::DeviceLayer;
 #endif
 
 static const char *TAG = "app_main";
-uint16_t light_endpoint_id = 0;
+// The On/Off (Plug-in Unit) endpoint that drives the relay, and the
+// Contact Sensor endpoint that reports door open/closed on GPIO10.
+uint16_t relay_endpoint_id = 0;
+uint16_t contact_sensor_endpoint_id = 0;
 
 using namespace esp_matter;
 using namespace esp_matter::attribute;
@@ -240,10 +243,10 @@ extern "C" void app_main()
     // Initialize subsystems. Order matters for safety:
     // relay first so the GPIO is in known-safe state before anything else.
     // thermal second so overtemp protection is active as early as possible.
-    // switch_input and button last for user-facing inputs.
+    // contact_sensor and button last for user-facing inputs.
     relay_init();
     thermal_init();
-    switch_input_init();
+    contact_sensor_init();
     shelly_button_handle_t button_handle = button_init();
     app_reset_button_register(button_handle);
 
@@ -256,15 +259,27 @@ extern "C" void app_main()
 
     MEMORY_PROFILER_DUMP_HEAP_STAT("node created");
 
-    on_off_light::config_t light_config;
-    light_config.on_off.on_off = DEFAULT_POWER;
+    // On/Off Plug-in Unit drives the opener relay (presents as a switch,
+    // not a light). Momentary pulse behavior is in app_driver.cpp.
+    on_off_plug_in_unit::config_t plugin_config;
+    plugin_config.on_off.on_off = DEFAULT_POWER;
 
     // endpoint handles can be used to add/modify clusters.
-    endpoint_t *endpoint = on_off_light::create(node, &light_config, ENDPOINT_FLAG_NONE, nullptr);
-    ABORT_APP_ON_FAILURE(endpoint != nullptr, ESP_LOGE(TAG, "Failed to create on_off_light endpoint"));
+    endpoint_t *endpoint = on_off_plug_in_unit::create(node, &plugin_config, ENDPOINT_FLAG_NONE, nullptr);
+    ABORT_APP_ON_FAILURE(endpoint != nullptr, ESP_LOGE(TAG, "Failed to create on_off_plug_in_unit endpoint"));
 
-    light_endpoint_id = endpoint::get_id(endpoint);
-    ESP_LOGI(TAG, "Light created with endpoint_id %d", light_endpoint_id);
+    relay_endpoint_id = endpoint::get_id(endpoint);
+    ESP_LOGI(TAG, "Opener relay created with endpoint_id %d", relay_endpoint_id);
+
+    // Contact Sensor reports door open/closed from the reed switch on
+    // GPIO10. Seed the initial state from the current door position.
+    contact_sensor::config_t contact_config;
+    contact_config.boolean_state.state_value = contact_sensor_read_state();
+    endpoint_t *contact_endpoint = contact_sensor::create(node, &contact_config, ENDPOINT_FLAG_NONE, nullptr);
+    ABORT_APP_ON_FAILURE(contact_endpoint != nullptr, ESP_LOGE(TAG, "Failed to create contact_sensor endpoint"));
+
+    contact_sensor_endpoint_id = endpoint::get_id(contact_endpoint);
+    ESP_LOGI(TAG, "Contact sensor created with endpoint_id %d", contact_sensor_endpoint_id);
 
 #if CHIP_DEVICE_CONFIG_ENABLE_THREAD && CHIP_DEVICE_CONFIG_ENABLE_WIFI_STATION
     // Enable secondary network interface
@@ -299,7 +314,11 @@ extern "C" void app_main()
     MEMORY_PROFILER_DUMP_HEAP_STAT("matter started");
 
     // Starting driver with default values
-    app_driver_light_set_defaults(light_endpoint_id);
+    app_driver_relay_set_defaults(relay_endpoint_id);
+
+    // Publish the actual door position; the code-driven Boolean State
+    // cluster needs an explicit setter call (the config seed doesn't reach it).
+    contact_sensor_report();
 
 #if CONFIG_ENABLE_ENCRYPTED_OTA
     err = esp_matter_ota_requestor_encrypted_init(s_decryption_key, s_decryption_key_len);

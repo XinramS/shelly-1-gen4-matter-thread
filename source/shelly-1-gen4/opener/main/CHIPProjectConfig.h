@@ -1,5 +1,5 @@
 //
-// Copyright 2026 AUTOMATOUS.IO
+// Copyright 2025-2026 AUTOMATOUS.IO
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,21 +14,12 @@
 // limitations under the License.
 //
 
-// button.h
-
 #pragma once
 
-#include <esp_err.h>
-
-typedef void *shelly_button_handle_t;
-
-// Initialize the device button (GPIO4 on Shelly 1 Gen4).
-//
-// Configures the onboard button as an active-low input. On press-down,
-// toggles the OnOff attribute on the light endpoint.
-//
-// The returned handle can be passed to app_reset_button_register() to
-// also wire factory-reset behavior to the same physical button.
-//
-// Returns a button handle on success, NULL on failure.
-shelly_button_handle_t button_init(void);
+#define CHIP_DEVICE_CONFIG_DEVICE_VENDOR_NAME             "AUTOMATOUS.IO"
+#define CHIP_DEVICE_CONFIG_DEVICE_PRODUCT_NAME            "Shelly 1 Gen4 MoT Opener"
+#define CHIP_DEVICE_CONFIG_DEVICE_SOFTWARE_VERSION_STRING "1.0.0"
+#define CHIP_DEVICE_CONFIG_DEVICE_SOFTWARE_VERSION        0x00010000
+#define CHIP_DEVICE_CONFIG_DEFAULT_DEVICE_HARDWARE_VERSION_STRING "v0.1.2"
+#define CHIP_DEVICE_CONFIG_DEVICE_HARDWARE_VERSION 0
+#define CHIP_DEVICE_CONFIG_DEVICE_HARDWARE_VERSION_STRING "v0.1.2"

@@ -30,8 +30,9 @@ using namespace esp_matter;
 static const char *TAG = "button";
 
 // Defined in app_main.cpp. Used by the button callback to know which
-// Matter endpoint's OnOff attribute to toggle.
-extern uint16_t light_endpoint_id;
+// Matter endpoint's OnOff attribute to toggle. On the opener this
+// triggers a relay pulse (see app_driver.cpp).
+extern uint16_t relay_endpoint_id;
 
 // Shelly 1 Gen4 onboard button is on GPIO4, active low.
 #define BUTTON_GPIO         GPIO_NUM_4
@@ -39,8 +40,8 @@ extern uint16_t light_endpoint_id;
 
 static void button_toggle_cb(void *arg, void *data)
 {
-    ESP_LOGI(TAG, "Toggle button pressed");
-    uint16_t endpoint_id = light_endpoint_id;
+    ESP_LOGI(TAG, "Trigger button pressed");
+    uint16_t endpoint_id = relay_endpoint_id;
     uint32_t cluster_id = OnOff::Id;
     uint32_t attribute_id = OnOff::Attributes::OnOff::Id;
 
