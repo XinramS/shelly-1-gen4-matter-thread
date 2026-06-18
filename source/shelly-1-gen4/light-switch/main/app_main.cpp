@@ -242,7 +242,7 @@ extern "C" void app_main()
 
     // endpoint handles can be used to add/modify clusters.
     endpoint_t *on_off_endpoint = on_off_light::create(node, &light_config, ENDPOINT_FLAG_NONE, light_handle);
-    ABORT_APP_ON_FAILURE(on_off_endpoint != nullptr, ESP_LOGE(TAG, "Failed to create on_off_light endpoint"));
+    ABORT_APP_ON_FAILURE(on_off_endpoint != nullptr, ESP_LOGE(TAG, "Failed to create on_off_endpoint"));
 
     light_endpoint_id = endpoint::get_id(on_off_endpoint);
     ESP_LOGI(TAG, "Light created with endpoint_id %d", light_endpoint_id);
@@ -250,7 +250,7 @@ extern "C" void app_main()
     // Create the On/Off Light Switch device type. This is connected to the Shelly's SW Input
     on_off_light_switch::config_t switch_config;
     endpoint_t *switch_endpoint = on_off_light_switch::create(node, &switch_config, ENDPOINT_FLAG_NONE, button_handle);
-    ABORT_APP_ON_FAILURE(on_off_endpoint != nullptr, ESP_LOGE(TAG, "Failed to create on_off_light endpoint"));
+    ABORT_APP_ON_FAILURE(switch_endpoint != nullptr, ESP_LOGE(TAG, "Failed to create switch_endpoint"));
 
     switch_endpoint_id = endpoint::get_id(switch_endpoint);
     ESP_LOGI(TAG, "Switch created with endpoint_id %d", switch_endpoint_id);
