@@ -21,13 +21,14 @@ The first third-party open source Matter over Thread firmware for the Shelly 1 G
 ## Contents
 
 - [Variants](#variants)
-- [Quick Start](#quick-start)
+- [Quick start](#quick-start)
 - [Features](#features)
 - [Compatibility](#compatibility)
 - [Documentation](#documentation)
-- [Repository Layout](#repository-layout)
+- [Repository layout](#repository-layout)
 - [Why?](#why)
 - [About](#about)
+- [In the wild](#in-the-wild)
 - [Other projects from Automatous](#other-projects-from-automatous)
 - [License](#license)
 
@@ -48,7 +49,7 @@ The Light variant is the flagship release and the one pictured above. Power-on b
 
 ---
 
-## Quick Start
+## Quick start
 
 **Have a [way onto Thread](#compatibility) (a Thread Border Router or an iPhone 15 Pro or newer), a USB-UART adapter, and a 1.27mm to 2.54mm adapter? Flash and go.**
 
@@ -111,7 +112,7 @@ Everything is in [`docs/`](docs/). A typical path is to read the [Flashing Guide
 
 ---
 
-## Repository Layout
+## Repository layout
 
 ```
 shelly-1-gen4-matter-thread/
@@ -143,6 +144,17 @@ This firmware was created from inside an old Dodge Sprinter T1N named Mabel, par
 I put in many sleepless nights obsessing over Thread support, which kickstarted me into writing custom firmware and testing with ESP-IDF, ESP-Matter, and ESPHome examples. That meant figuring out Shelly's custom partition offsets, the GPIO quirks specific to this device, and getting Matter over Thread commissioning working on non-devkit hardware.
 
 If it saved you the same headache, consider leaving a ⭐ on the repo. It helps the project show up in GitHub search and signals to other Shelly 1 Gen4 owners that this firmware exists and works.
+
+---
+
+## In the wild
+
+Press, blog posts, and mentions of the project.
+
+- [Shelly relay switches finally run on Thread with open-source firmware](https://www.matteralpha.com/news/shelly-relay-switches-finally-run-on-thread-with-open-source-firmware) — Matter Alpha, May 2026
+- [Shelly Gen 4: Custom-Firmware bringt Unterstützung für Matter over Thread](https://stadt-bremerhaven.de/shelly-gen-4-custom-firmware-bringt-unterstuetzung-fuer-matter-over-thread/) — Caschys Blog, May 2026 (German)
+- [Community discussion on r/homeassistant](https://www.reddit.com/r/homeassistant/comments/1t8bv8q/made_an_open_source_matter_over_thread_firmware/) — Reddit, May 2026
+- [Jonathan Hui of the Thread Group / CSA highlights the project](https://www.linkedin.com/posts/jonathanhui_from-the-homeassistant-community-on-reddit-share-7459779233565925377-KUMe/) — LinkedIn, May 2026
 
 ---
 
