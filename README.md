@@ -5,6 +5,7 @@
 ![Last Commit](https://img.shields.io/github/last-commit/automatous-io/shelly-1-gen4-matter-thread)
 [![Downloads](https://img.shields.io/github/downloads/automatous-io/shelly-1-gen4-matter-thread/total)](../../releases)
 [![Stars](https://img.shields.io/github/stars/automatous-io/shelly-1-gen4-matter-thread?style=social)](../../stargazers)
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy_Me_a_Coffee-support-FFDD00?logo=buymeacoffee&logoColor=black)](https://buymeacoffee.com/automatous.io)
 
 > **⚠️ Disclaimer.** Installing this firmware voids your Shelly warranty, and Shelly cannot provide technical support for a device running third-party code. It removes the factory keys that enable Shelly Cloud and official OTA updates, so treat flashing as one-way unless you keep the full-chip backup you make before flashing. Incorrect flashing can brick your device, so always back up your original firmware before proceeding. You assume all responsibility for any damage, data loss, or device failure. This project is not affiliated with Shelly, Allterco Robotics, CSA, or Espressif Systems. See [Warranty, Factory Keys, and Reversibility](docs/REVERSIBILITY.md).
 
@@ -143,7 +144,7 @@ This firmware was created from inside an old Dodge Sprinter T1N named Mabel, par
 
 I put in many sleepless nights obsessing over Thread support, which kickstarted me into writing custom firmware and testing with ESP-IDF, ESP-Matter, and ESPHome examples. That meant figuring out Shelly's custom partition offsets, the GPIO quirks specific to this device, and getting Matter over Thread commissioning working on non-devkit hardware.
 
-If it saved you the same headache, consider leaving a ⭐ on the repo. It helps the project show up in GitHub search and signals to other Shelly 1 Gen4 owners that this firmware exists and works.
+If it saved you the same headache, consider leaving a ⭐ on the repo. It helps the project show up in GitHub search and signals to other Shelly 1 Gen4 owners that this firmware exists and works. If you would like to support the work directly, you can [buy me a coffee](https://buymeacoffee.com/automatous.io).
 
 ---
 
