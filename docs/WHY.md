@@ -11,6 +11,7 @@ This document explains why this firmware exists, how it compares to other Shelly
 - [Repurposing the Zigbee radio](#repurposing-the-zigbee-radio)
 - [Why Matter, and not ESPHome or Tasmota](#why-matter-and-not-esphome-or-tasmota)
 - [Why Thread instead of WiFi](#why-thread-instead-of-wifi)
+- [Waiting for official Shelly support](#waiting-for-official-shelly-support)
 
 ---
 
@@ -49,6 +50,12 @@ Matter runs over either Thread or WiFi. This firmware chooses Thread for several
 - Power consumption. Thread can run with much lower power than WiFi, but only as a Sleepy End Device. This firmware runs as a Thread Router, which trades sleep-mode savings for mesh extension. See [Power Consumption](POWER.md) for measured numbers and the rationale.
 
 This project began because reliable smart home devices were needed in a Sprinter van where WiFi is not always available. Battery and solar capacity can be limiting in van life, which is why a Sleepy End Device variant may join the roadmap later. The current variants prioritize Thread mesh extension, which serves a broader audience. If you are an offgrid, smart home, or Thread-curious tinkerer, you might find this useful too.
+
+---
+
+## Waiting for official Shelly support
+
+If you would rather not flash third-party firmware, another option is to wait for official support and ask Shelly to add it. Shelly currently has no plans for Thread, but they track it as a feature request and have said that enough requests could move it onto their roadmap. You can submit a request through Shelly's feature proposal form: [Request Thread support from Shelly](https://support.shelly.cloud/en/support/tickets/new?ticket_form=devices_and_features_proposal_archive).
 
 ---
 
