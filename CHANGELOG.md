@@ -70,6 +70,17 @@ First release of the Opener variant. Matter On/Off Plug-in Unit plus a Contact S
 - Three-endpoint Matter composition: an On/Off Plug-in Unit for the relay, a Contact Sensor for door state, and the Root Node.
 - Compile-time constants in `main/app_priv.h`: `OPENER_PULSE_MS` (default 500) for pulse width and `CONTACT_OPEN_IS_HIGH` (default 0) for reed polarity.
 
+## Outlet
+
+### [1.0.0] - 2026-06-19
+
+First release of the Outlet variant. Matter On/Off Plug-in Unit with latching relay behavior, built on the Light v1.2.1 module foundation and relay safety contract.
+
+#### Added
+- Latching relay presented as a Matter On/Off Plug-in Unit, so smart home apps display and voice-control the device as an outlet rather than a light. Electrically identical to the Light variant.
+- External wall switch input on the SW terminal (GPIO10), hardware-debounced, toggling the relay as on the Light variant.
+- Two-endpoint Matter composition: an On/Off Plug-in Unit for the relay, and the Root Node.
+
 ---
 
 Full release notes, including tested scenarios, are on the [GitHub releases page](../../releases).

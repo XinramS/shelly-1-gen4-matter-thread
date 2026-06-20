@@ -24,7 +24,7 @@ This document tracks the current known limitations and the planned work. To prio
 
 - OTA updates. Exploratory, tracked for a future release.
 - Upgrade in place for web flasher users. A flash manifest that writes the three component binaries (bootloader, partition table, and application) at their offsets without erasing the nvs partition, so Matter commissioning and Thread credentials survive a web-flash update. In progress.
-- Additional variants. The Light and Opener variants are released. An Outlet variant is planned: a latching relay like Light, presented as a Matter On/Off Plug-in Unit, with the SW terminal kept as a physical wall toggle. This differs from the Opener, which uses a momentary pulse and dedicates the SW terminal to a contact sensor. A Light Switch variant, a Matter On/Off Light Switch that controls other Matter lights, is also planned.
+- Additional variants. The Light, Outlet, and Opener variants are released. A Light Switch variant, a Matter On/Off Light Switch that controls other Matter lights, is planned.
 - Shelly 1 Mini support. Planned, pending an easier flashing method, since the Mini exposes programming pads rather than a female header.
 - A Sleepy End Device variant for battery and solar constrained installs, trading mesh extension for lower power.
 - Build ergonomics. Migrate the build to consume esp-matter through the component library instead of a separately installed SDK, and fold the C6 and Thread settings into the base sdkconfig.defaults, so a plain `idf.py build` works without extra setup.

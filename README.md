@@ -41,10 +41,13 @@ Matter device types are declared by the firmware at flash time and cannot be cha
 
 | Variant | Matter device type | Relay behavior | Good for |
 |---|---|---|---|
-| Light | On/Off Light | Latching. Holds on or off until changed. | Lights, fans, outlets, heaters, and other set-and-hold loads. |
+| Light | On/Off Light *(shown as a light)* | Latching. Holds on or off until changed. | Lights and lighting circuits. |
+| Outlet | On/Off Plug-in Unit *(shown as an outlet)* | Latching. Holds on or off until changed. | Outlets, plug-in appliances, fans, heaters, pumps, and other set-and-hold loads. |
 | Opener | On/Off Plug-in Unit + Contact Sensor | Momentary pulse, roughly 500ms. | Garage door openers, gates, doorbells, and other pulse-activated devices. |
 
-The Light variant is the flagship release and the one pictured above. Power-on behavior defaults to off and is configurable through the Matter StartUpOnOff attribute (off, on, toggle, or restore last state). Home Assistant users can write this attribute directly. Apple Home and Google Home have limited Matter attribute editing today, so the firmware default applies there until those apps improve.
+Light and Outlet are electrically identical. Both latch and hold state, and both keep the SW terminal as a physical wall toggle. They differ only in the Matter device type they report, which sets how your smart home app names, displays, and voice-controls the device, as a light or as an outlet. Some apps let you recategorize after pairing. Others fix the icon, label, and automations to the reported type, which cannot change after commissioning. Pick the variant that matches the load you wired, so the controls read the way you expect.
+
+The Light variant is the flagship release and the one pictured above. Power-on behavior on the latching variants (Light and Outlet) defaults to off and is configurable through the Matter StartUpOnOff attribute (off, on, toggle, or restore last state). Home Assistant users can write this attribute directly. Apple Home and Google Home have limited Matter attribute editing today, so the firmware default applies there until those apps improve.
 
 > ⚠️ This firmware uses ESP-Matter SDK test credentials and is not VID/PID certified. It is functional for personal use and not suitable for resale as a certified Matter product. See [Certification](docs/CERTIFICATION.md).
 
@@ -54,7 +57,7 @@ The Light variant is the flagship release and the one pictured above. Power-on b
 
 **Have a [way onto Thread](#compatibility) (a Thread Border Router or an iPhone 15 Pro or newer), a USB-UART adapter, and a 1.27mm to 2.54mm adapter? Flash and go.**
 
-1. [Download the latest release](../../releases/latest). Grab the `.bin` for the [variant](#variants) you want, named `automatous-io-shelly-1-gen4-{variant}-vX.Y.Z.bin` (for example the `light` or `opener` build).
+1. [Download the latest release](../../releases/latest). Grab the `.bin` for the [variant](#variants) you want, named `automatous-io-shelly-1-gen4-{variant}-vX.Y.Z.bin` (for example the `light`, `outlet`, or `opener` build).
 2. [Enter flash mode](docs/FLASHING.md#enter-flash-mode) on your Shelly.
 3. [Back up your original firmware](docs/FLASHING.md#2-back-up-the-original-shelly-firmware) and flash the latest release with [ESPConnect](docs/FLASHING.md#flash-with-espconnect).
 4. [Commission](docs/COMMISSIONING.md) with your smart home app.
@@ -124,7 +127,7 @@ shelly-1-gen4-matter-thread/
     └── shelly-1-gen4/
         ├── light/         Matter On/Off Light, latching relay. Released.
         ├── opener/        Matter On/Off Plug-in Unit + Contact Sensor, momentary pulse. Released.
-        ├── outlet/        Matter On/Off Plug-in Unit, latching relay, SW kept as a wall toggle. Planned.
+        ├── outlet/        Matter On/Off Plug-in Unit, latching relay, SW kept as a wall toggle. Released.
         └── light-switch/  Planned.
 ```
 
@@ -173,4 +176,4 @@ Other open source, local-first, Matter over Thread projects from Automatous.
 
 Apache 2.0. See [LICENSE](LICENSE).
 
-Based on the [ESP-Matter](https://github.com/espressif/esp-matter) light example by Espressif Systems, licensed under Apache 2.0. The Opener variant's Matter device composition was informed by the esp-matter `on_off_plugin_unit` example.
+Based on the [ESP-Matter](https://github.com/espressif/esp-matter) light example by Espressif Systems, licensed under Apache 2.0. The Opener and Outlet variants' Matter device composition was informed by the esp-matter `on_off_plugin_unit` example.
