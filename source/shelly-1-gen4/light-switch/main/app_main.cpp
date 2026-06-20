@@ -1,10 +1,25 @@
-/*
-   This example code is in the Public Domain (or CC0 licensed, at your option.)
+//
+// Copyright 2026 AUTOMATOUS.IO
+// Portions derived from Espressif esp-matter examples,
+// originally released into the public domain / CC0.
+//
+// Detached relay support (the SW input drives a Matter binding instead of the
+// local relay) contributed by Tomas McGuinness (https://github.com/tomasmcguinness).
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
 
-   Unless required by applicable law or agreed to in writing, this
-   software is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-   CONDITIONS OF ANY KIND, either express or implied.
-*/
+// app_main.cpp
 
 #include <esp_err.h>
 #include <esp_log.h>
@@ -130,7 +145,7 @@ static void app_event_cb(const ChipDeviceEvent *event, intptr_t arg)
             chip::CommissioningWindowManager  &commissionMgr = chip::Server::GetInstance().GetCommissioningWindowManager();
             constexpr auto kTimeoutSeconds = chip::System::Clock::Seconds16(k_timeout_seconds);
             if (!commissionMgr.IsCommissioningWindowOpen()) {
-                /* After removing last fabric, re-open commissioning window via DNS-SD */
+                // After removing last fabric, re-open commissioning window via DNS-SD
                 CHIP_ERROR err = commissionMgr.OpenBasicCommissioningWindow(kTimeoutSeconds,
                                                                             chip::CommissioningWindowAdvertisement::kDnssdOnly);
                 if (err != CHIP_NO_ERROR) {
@@ -185,7 +200,7 @@ static esp_err_t app_identification_cb(identification::callback_type_t type, uin
 
     case identification::callback_type_t::EFFECT:
         // TriggerEffect command - effect_id specifies which effect.
-        // For v1.2.0 we treat all effects as basic identify blink.
+        // All effects currently map to the basic identify blink.
         ESP_LOGI(TAG, "Identify EFFECT %u variant %u - using default blink", effect_id, effect_variant);
         status_led_start_identify();
         break;
@@ -219,15 +234,15 @@ extern "C" void app_main()
 {
     esp_err_t err = ESP_OK;
 
-    /* Initialize the ESP NVS layer */
+    // Initialize the ESP NVS layer
     nvs_flash_init();
 
-    /* Initialize status LED */
+    // Initialize status LED
     status_led_init();
 
     MEMORY_PROFILER_DUMP_HEAP_STAT("Bootup");
 
-     // Initialize subsystems. Order matters for safety:
+    // Initialize subsystems. Order matters for safety:
     // relay first so the GPIO is in known-safe state before anything else.
     // thermal second so overtemp protection is active as early as possible.
     // switch_input and button last for user-facing inputs.
@@ -239,7 +254,7 @@ extern "C" void app_main()
 
     app_driver_init();
 
-    /* Create a Matter node and add the mandatory Root Node device type on endpoint 0 */
+    // Create a Matter node and add the mandatory Root Node device type on endpoint 0
     node::config_t node_config;
 
     // node handle can be used to add/modify other endpoints.
@@ -267,7 +282,6 @@ extern "C" void app_main()
     switch_endpoint_id = endpoint::get_id(switch_endpoint);
     ESP_LOGI(TAG, "Switch created with endpoint_id %d", switch_endpoint_id);
 
-   
 #if CHIP_DEVICE_CONFIG_ENABLE_THREAD && CHIP_DEVICE_CONFIG_ENABLE_WIFI_STATION
     // Enable secondary network interface
     secondary_network_interface::config_t secondary_network_interface_config;
@@ -276,7 +290,7 @@ extern "C" void app_main()
 #endif
 
 #if CHIP_DEVICE_CONFIG_ENABLE_THREAD
-    /* Set OpenThread platform config */
+    // Set OpenThread platform config
     esp_openthread_platform_config_t config = {
         .radio_config = ESP_OPENTHREAD_DEFAULT_RADIO_CONFIG(),
         .host_config = ESP_OPENTHREAD_DEFAULT_HOST_CONFIG(),
@@ -294,13 +308,13 @@ extern "C" void app_main()
 #endif
 #endif // CONFIG_ENABLE_SET_CERT_DECLARATION_API
 
-    /* Matter start */
+    // Matter start
     err = esp_matter::start(app_event_cb);
     ABORT_APP_ON_FAILURE(err == ESP_OK, ESP_LOGE(TAG, "Failed to start Matter, err:%d", err));
 
     MEMORY_PROFILER_DUMP_HEAP_STAT("matter started");
 
-    /* Starting driver with default values */
+    // Starting driver with default values
     app_driver_light_set_defaults(light_endpoint_id);
 
 #if CONFIG_ENABLE_ENCRYPTED_OTA

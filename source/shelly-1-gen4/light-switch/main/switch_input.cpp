@@ -1,6 +1,9 @@
 //
 // Copyright 2026 AUTOMATOUS.IO
 //
+// Detached relay support (the SW input drives a Matter binding instead of the
+// local relay) contributed by Tomas McGuinness (https://github.com/tomasmcguinness).
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -75,7 +78,7 @@ static void switch_input_task(void *arg)
 
             lock::ScopedChipStackLock lock(portMAX_DELAY);
             client::cluster_update(switch_endpoint_id, &req_handle);
-            
+
             ESP_LOGI(TAG, "Switch input toggled");
         }
     }
