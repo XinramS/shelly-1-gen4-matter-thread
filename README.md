@@ -124,7 +124,7 @@ shelly-1-gen4-matter-thread/
     └── shelly-1-gen4/
         ├── light/         Matter On/Off Light, latching relay. Released.
         ├── opener/        Matter On/Off Plug-in Unit + Contact Sensor, momentary pulse. Released.
-        ├── switch/        On/Off switch, latching relay, SW kept as a wall toggle. Planned.
+        ├── outlet/        Matter On/Off Plug-in Unit, latching relay, SW kept as a wall toggle. Planned.
         └── light-switch/  Planned.
 ```
 

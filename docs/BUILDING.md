@@ -34,7 +34,7 @@ source/
 └── shelly-1-gen4/
     ├── light/           # Matter On/Off Light, latching relay (released)
     ├── opener/          # Matter On/Off Plug-in Unit + Contact Sensor, momentary pulse (released)
-    ├── switch/          # On/Off switch, latching relay, SW kept as a wall toggle (planned)
+    ├── outlet/          # Matter On/Off Plug-in Unit, latching relay, SW kept as a wall toggle (planned)
     └── light-switch/    # Matter On/Off Light Switch (planned)
 ```
 

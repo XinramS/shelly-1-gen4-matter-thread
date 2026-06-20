@@ -59,7 +59,7 @@ automatous-io-{model}-{variant}-{version}.bin
 ```
 
 - `{model}` is the product. This repo targets `shelly-1-gen4`.
-- `{variant}` is the firmware build: `light`, `opener`, `switch`, or `light-switch`. See [Building from Source](BUILDING.md#repository-structure) for what each variant does.
+- `{variant}` is the firmware build: `light`, `opener`, `outlet`, or `light-switch`. See [Building from Source](BUILDING.md#repository-structure) for what each variant does.
 - `{version}` is the release version, for example `v1.2.1`.
 
 A complete example is `automatous-io-shelly-1-gen4-light-v1.2.1.bin`.
