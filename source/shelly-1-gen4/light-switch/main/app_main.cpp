@@ -19,7 +19,12 @@
 
 #include <app_priv.h>
 #include <app_reset.h>
-#include "status_led.h"
+#include <status_led.h>
+#include <button.h>
+#include <thermal.h>
+#include <switch_input.h>
+#include <relay.h>
+
 #if CHIP_DEVICE_CONFIG_ENABLE_THREAD
 #include <platform/ESP32/OpenthreadLauncher.h>
 #endif
@@ -222,10 +227,17 @@ extern "C" void app_main()
 
     MEMORY_PROFILER_DUMP_HEAP_STAT("Bootup");
 
-    /* Initialize driver */
-    app_driver_handle_t light_handle = app_driver_light_init();
-    app_driver_handle_t button_handle = app_driver_button_init();
+     // Initialize subsystems. Order matters for safety:
+    // relay first so the GPIO is in known-safe state before anything else.
+    // thermal second so overtemp protection is active as early as possible.
+    // switch_input and button last for user-facing inputs.
+    relay_init();
+    thermal_init();
+    switch_input_init();
+    shelly_button_handle_t button_handle = button_init();
     app_reset_button_register(button_handle);
+
+    app_driver_init();
 
     /* Create a Matter node and add the mandatory Root Node device type on endpoint 0 */
     node::config_t node_config;
@@ -241,7 +253,7 @@ extern "C" void app_main()
     light_config.on_off.on_off = DEFAULT_POWER;
 
     // endpoint handles can be used to add/modify clusters.
-    endpoint_t *on_off_endpoint = on_off_light::create(node, &light_config, ENDPOINT_FLAG_NONE, light_handle);
+    endpoint_t *on_off_endpoint = on_off_light::create(node, &light_config, ENDPOINT_FLAG_NONE, nullptr);
     ABORT_APP_ON_FAILURE(on_off_endpoint != nullptr, ESP_LOGE(TAG, "Failed to create on_off_endpoint"));
 
     light_endpoint_id = endpoint::get_id(on_off_endpoint);
@@ -249,12 +261,13 @@ extern "C" void app_main()
 
     // Create the On/Off Light Switch device type. This is connected to the Shelly's SW Input
     on_off_light_switch::config_t switch_config;
-    endpoint_t *switch_endpoint = on_off_light_switch::create(node, &switch_config, ENDPOINT_FLAG_NONE, button_handle);
+    endpoint_t *switch_endpoint = on_off_light_switch::create(node, &switch_config, ENDPOINT_FLAG_NONE, nullptr);
     ABORT_APP_ON_FAILURE(switch_endpoint != nullptr, ESP_LOGE(TAG, "Failed to create switch_endpoint"));
 
     switch_endpoint_id = endpoint::get_id(switch_endpoint);
     ESP_LOGI(TAG, "Switch created with endpoint_id %d", switch_endpoint_id);
 
+   
 #if CHIP_DEVICE_CONFIG_ENABLE_THREAD && CHIP_DEVICE_CONFIG_ENABLE_WIFI_STATION
     // Enable secondary network interface
     secondary_network_interface::config_t secondary_network_interface_config;
