@@ -35,7 +35,7 @@ source/
     ├── light/           # Matter On/Off Light, latching relay (released)
     ├── opener/          # Matter On/Off Plug-in Unit + Contact Sensor, momentary pulse (released)
     ├── outlet/          # Matter On/Off Plug-in Unit, latching relay, SW kept as a wall toggle (released)
-    └── light-switch/    # Matter On/Off Light Switch (planned)
+    └── light-switch/    # Matter On/Off Light Switch, detached relay + SW input bound to other Matter devices (released)
 ```
 
 Each variant is a self-contained ESP-IDF project. Build commands run from inside the variant directory. The examples below build the `light` variant; to build a different variant, substitute its directory in the `cd` command.
@@ -74,7 +74,7 @@ Run these in the same shell where you sourced the two `export.sh` scripts. ESP-I
 
 The `-DSDKCONFIG_DEFAULTS` flag points the build at `sdkconfig.defaults.c6_thread_shelly`, which holds the C6 and Thread settings. Without it the build will not produce a Matter over Thread image. `set-target` applies it once, and after that plain `idf.py build` rebuilds incrementally.
 
-The build produces individual `.bin` files in the `build/` directory. The application image is named after the variant, so the light build produces `build/light.bin` and the opener build produces `build/opener.bin`. The `Project build complete` line at the end of the build prints its exact path.
+The build produces individual `.bin` files in the `build/` directory. The application image is named after the variant, so the light build produces `build/light.bin` and the opener build produces `build/opener.bin` and so on. The `Project build complete` line at the end of the build prints its exact path.
 
 ---
 

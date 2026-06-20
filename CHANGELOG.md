@@ -81,6 +81,17 @@ First release of the Outlet variant. Matter On/Off Plug-in Unit with latching re
 - External wall switch input on the SW terminal (GPIO10), hardware-debounced, toggling the relay as on the Light variant.
 - Two-endpoint Matter composition: an On/Off Plug-in Unit for the relay, and the Root Node.
 
+## Light Switch
+
+### [1.0.0] - 2026-06-20
+
+First release of the Light Switch variant, contributed by [Tomas McGuinness](https://github.com/tomasmcguinness). Derived from the Light 1.2.0 codebase, it adds detached-relay support so the SW terminal controls other Matter devices instead of the local relay.
+
+#### Added
+- Detached relay. The SW terminal (GPIO10) no longer drives the local relay. It sends a Matter OnOff Toggle command through a second endpoint's binding, so the wall switch can control other Matter devices such as bulbs, groups, or scenes. With no binding configured, flipping the switch does nothing locally.
+- On/Off Light Switch endpoint driven by the SW input, with binding dispatch for both unicast and group bound commands.
+- Two-endpoint Matter composition: an On/Off Light for the relay, controlled by app, voice, and the onboard button, and an On/Off Light Switch for the SW input, plus the Root Node.
+
 ---
 
 Full release notes, including tested scenarios, are on the [GitHub releases page](../../releases).

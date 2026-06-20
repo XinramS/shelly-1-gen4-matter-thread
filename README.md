@@ -44,10 +44,13 @@ Matter device types are declared by the firmware at flash time and cannot be cha
 | Light | On/Off Light *(shown as a light)* | Latching. Holds on or off until changed. | Lights and lighting circuits. |
 | Outlet | On/Off Plug-in Unit *(shown as an outlet)* | Latching. Holds on or off until changed. | Outlets, plug-in appliances, fans, heaters, pumps, and other set-and-hold loads. |
 | Opener | On/Off Plug-in Unit + Contact Sensor | Momentary pulse, roughly 500ms. | Garage door openers, gates, doorbells, and other pulse-activated devices. |
+| Light Switch | On/Off Light + On/Off Light Switch | Latching, but the SW terminal is detached from the relay. | Repurposing the wall switch to control other Matter devices through a binding, while the local relay runs independently. |
 
 Light and Outlet are electrically identical. Both latch and hold state, and both keep the SW terminal as a physical wall toggle. They differ only in the Matter device type they report, which sets how your smart home app names, displays, and voice-controls the device, as a light or as an outlet. Some apps let you recategorize after pairing. Others fix the icon, label, and automations to the reported type, which cannot change after commissioning. Pick the variant that matches the load you wired, so the controls read the way you expect.
 
 The Light variant is the flagship release and the one pictured above. Power-on behavior on the latching variants (Light and Outlet) defaults to off and is configurable through the Matter StartUpOnOff attribute (off, on, toggle, or restore last state). Home Assistant users can write this attribute directly. Apple Home and Google Home have limited Matter attribute editing today, so the firmware default applies there until those apps improve.
+
+The Light Switch variant, contributed by [Tomas McGuinness](https://github.com/tomasmcguinness), decouples the SW terminal from the local relay. Flipping the wall switch no longer toggles the wired load. Instead it sends a Matter Toggle command through a second On/Off Light Switch endpoint, which you bind to other Matter devices such as bulbs, groups, or scenes. The local relay stays on the On/Off Light endpoint and is controlled by your smart home app, by voice, and by the onboard button. Out of the box the wall switch does nothing until you configure a binding. To keep local control as well, bind the switch endpoint back to the device's own light endpoint. You can write the binding with chip-tool. Home Assistant users can use the [Matter Binding Helper](https://github.com/cedricziel/ha-matter-binding-helper) by Cedric Ziel, which makes it straightforward.
 
 > ⚠️ This firmware uses ESP-Matter SDK test credentials and is not VID/PID certified. It is functional for personal use and not suitable for resale as a certified Matter product. See [Certification](docs/CERTIFICATION.md).
 
@@ -57,7 +60,7 @@ The Light variant is the flagship release and the one pictured above. Power-on b
 
 **Have a [way onto Thread](#compatibility) (a Thread Border Router or an iPhone 15 Pro or newer), a USB-UART adapter, and a 1.27mm to 2.54mm adapter? Flash and go.**
 
-1. [Download the latest release](../../releases/latest). Grab the `.bin` for the [variant](#variants) you want, named `automatous-io-shelly-1-gen4-{variant}-vX.Y.Z.bin` (for example the `light`, `outlet`, or `opener` build).
+1. [Download the latest release](../../releases/latest). Grab the `.bin` for the [variant](#variants) you want, named `automatous-io-shelly-1-gen4-{variant}-vX.Y.Z.bin` (for example the `light`, `outlet`, `opener`, or `light-switch` build).
 2. [Enter flash mode](docs/FLASHING.md#enter-flash-mode) on your Shelly.
 3. [Back up your original firmware](docs/FLASHING.md#2-back-up-the-original-shelly-firmware) and flash the latest release with [ESPConnect](docs/FLASHING.md#flash-with-espconnect).
 4. [Commission](docs/COMMISSIONING.md) with your smart home app.
@@ -128,7 +131,7 @@ shelly-1-gen4-matter-thread/
         ├── light/         Matter On/Off Light, latching relay. Released.
         ├── opener/        Matter On/Off Plug-in Unit + Contact Sensor, momentary pulse. Released.
         ├── outlet/        Matter On/Off Plug-in Unit, latching relay, SW kept as a wall toggle. Released.
-        └── light-switch/  Planned.
+        └── light-switch/  Matter On/Off Light Switch, detached relay with the SW input bound to other Matter devices. Released.
 ```
 
 Each variant under `source/shelly-1-gen4/` is a self-contained ESP-IDF project. See [Building from Source](docs/BUILDING.md) for what each variant does and how to build it.
@@ -176,4 +179,4 @@ Other open source, local-first, Matter over Thread projects from Automatous.
 
 Apache 2.0. See [LICENSE](LICENSE).
 
-Based on the [ESP-Matter](https://github.com/espressif/esp-matter) light example by Espressif Systems, licensed under Apache 2.0. The Opener and Outlet variants' Matter device composition was informed by the esp-matter `on_off_plugin_unit` example.
+Based on the [ESP-Matter](https://github.com/espressif/esp-matter) light example by Espressif Systems, licensed under Apache 2.0. The Opener and Outlet variants' Matter device composition was informed by the esp-matter `on_off_plugin_unit` example, and the Light Switch variant's by the esp-matter `light_switch` example.
