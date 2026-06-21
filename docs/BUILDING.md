@@ -20,8 +20,18 @@ This guide covers building the Automatous firmware from source. If you just want
 ## Requirements
 
 - **ESP-IDF v5.5.2**, Espressif's IoT development framework.
-- **ESP-Matter (latest)**, Espressif's Matter SDK, installed as a cloned repository. The build reads it through the `ESP_MATTER_PATH` environment variable, which esp-matter's `export.sh` sets. It is not pulled from the component registry.
+- **ESP-Matter**, Espressif's Matter SDK, installed as a cloned repository. The build reads it through the `ESP_MATTER_PATH` environment variable, which esp-matter's `export.sh` sets. It is not pulled from the component registry. Check it out to the pinned commit below rather than building against `main`.
 - **macOS or Linux**. The Windows build path is not currently tested.
+
+These binaries are built against pinned toolchain versions. Newer versions may build, but they are not what the released binaries were produced with.
+
+| Component | Version |
+|---|---|
+| ESP-IDF | `v5.5.2` |
+| ESP-Matter | `2cb668c95de4f24786d20b7cb03c171d6e27b79e` |
+| connectedhomeip (esp-matter submodule) | `8f943388af4d12dc5c484eae21b22723e03c3616` |
+
+connectedhomeip is a submodule of esp-matter, so checking out the esp-matter commit and updating its submodules pulls the matching connectedhomeip commit automatically. It lives in Espressif's connectedhomeip fork, not the upstream CSA repository.
 
 ---
 
@@ -50,6 +60,14 @@ If you don't already have ESP-IDF and ESP-Matter installed, follow Espressif's o
 - [ESP-Matter Get Started](https://docs.espressif.com/projects/esp-matter/en/latest/esp32c6/developing.html)
 
 This project assumes you have both SDKs installed. The build step below sets the ESP32-C6 target.
+
+After cloning esp-matter, check it out to the pinned commit and sync its submodules so your build matches the released binaries:
+
+```bash
+cd ~/esp/esp-matter
+git checkout 2cb668c95de4f24786d20b7cb03c171d6e27b79e
+git submodule update --init --recursive
+```
 
 ---
 
