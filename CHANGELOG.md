@@ -60,6 +60,13 @@ First public release. Matter On/Off Light device type with latching relay behavi
 
 ## Opener
 
+### [1.0.1] - 2026-06-22
+
+Closes a fail-open gap in the momentary pulse. No change to normal operation.
+
+#### Fixed
+- Pulse fail-open on timer-arm failure. If the one-shot auto-off timer could not be armed, for example under heap pressure during Matter, Thread, and BLE activity, the relay could remain energized instead of pulsing. The firmware now arms the auto-off before energizing and only closes the relay once its release is guaranteed, so a failed arm leaves the trigger de-asserted rather than held. The fix covers both timer creation and timer start. Reported by @456789TZ.
+
 ### [1.0.0] - 2026-06-16
 
 First release of the Opener variant. Matter On/Off Plug-in Unit plus a Contact Sensor, built on the Light v1.2.1 module foundation and relay safety contract.
