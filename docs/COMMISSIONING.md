@@ -130,3 +130,4 @@ Hold the onboard relay button for several seconds. The device resets and re-ente
 - [Certification](CERTIFICATION.md) — uncertified status and test credentials
 - [Roadmap](ROADMAP.md) — current known limitations and planned work
 - [Contributing](CONTRIBUTING.md) — reporting bugs and the firmware filename convention
+- [Contributors](CONTRIBUTORS.md) — people who have helped move the project forward

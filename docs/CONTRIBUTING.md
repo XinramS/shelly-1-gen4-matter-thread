@@ -108,3 +108,4 @@ Be straightforward, technical, and direct. Disagreement is fine; hostility is no
 - [Building from Source](BUILDING.md) — compiling the firmware yourself
 - [Certification](CERTIFICATION.md) — uncertified status and test credentials
 - [Roadmap](ROADMAP.md) — current known limitations and planned work
+- [Contributors](CONTRIBUTORS.md) — people who have helped move the project forward

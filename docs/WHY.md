@@ -70,3 +70,4 @@ If you would rather not flash third-party firmware, another option is to wait fo
 - [Certification](CERTIFICATION.md) — uncertified status and test credentials
 - [Roadmap](ROADMAP.md) — current known limitations and planned work
 - [Contributing](CONTRIBUTING.md) — reporting bugs and the firmware filename convention
+- [Contributors](CONTRIBUTORS.md) — people who have helped move the project forward

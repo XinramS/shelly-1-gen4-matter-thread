@@ -41,3 +41,4 @@ This document tracks the current known limitations and the planned work. To prio
 - [Building from Source](BUILDING.md) — compiling the firmware yourself
 - [Certification](CERTIFICATION.md) — uncertified status and test credentials
 - [Contributing](CONTRIBUTING.md) — reporting bugs and the firmware filename convention
+- [Contributors](CONTRIBUTORS.md) — people who have helped move the project forward

@@ -78,3 +78,4 @@ This project is not affiliated with, endorsed by, or sponsored by any of these o
 - [Building from Source](BUILDING.md) — compiling the firmware yourself
 - [Roadmap](ROADMAP.md) — current known limitations and planned work
 - [Contributing](CONTRIBUTING.md) — reporting bugs and the firmware filename convention
+- [Contributors](CONTRIBUTORS.md) — people who have helped move the project forward

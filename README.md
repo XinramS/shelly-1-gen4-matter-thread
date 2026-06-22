@@ -115,6 +115,7 @@ Everything is in [`docs/`](docs/). A typical path is to read the [Flashing Guide
 - [Certification](docs/CERTIFICATION.md) — uncertified status and test credentials
 - [Roadmap](docs/ROADMAP.md) — current known limitations and planned work
 - [Contributing](docs/CONTRIBUTING.md) — reporting bugs and the firmware filename convention
+- [Contributors](docs/CONTRIBUTORS.md) — people who have helped move the project forward
 - [Changelog](CHANGELOG.md) — per-variant release history
 
 ---
