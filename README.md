@@ -104,7 +104,7 @@ Matter over Thread needs a way onto a Thread network to commission and reach the
 
 ## Documentation
 
-Everything is in [`docs/`](docs/). A typical path is to read the [Flashing Guide](docs/FLASHING.md) and its safety warning, flash the firmware, then [commission](docs/COMMISSIONING.md) the device to your smart home.
+Most of it is in [`docs/`](docs/), with the changelog and security policy at the repo root. A typical path is to read the [Flashing Guide](docs/FLASHING.md) and its safety warning, flash the firmware, then [commission](docs/COMMISSIONING.md) the device to your smart home.
 
 - [Why Matter over Thread](docs/WHY.md) — the rationale for Matter over Thread
 - [Flashing Guide](docs/FLASHING.md) — wiring, backing up stock firmware, and flashing
@@ -116,6 +116,7 @@ Everything is in [`docs/`](docs/). A typical path is to read the [Flashing Guide
 - [Roadmap](docs/ROADMAP.md) — current known limitations and planned work
 - [Contributing](docs/CONTRIBUTING.md) — reporting bugs and the firmware filename convention
 - [Contributors](docs/CONTRIBUTORS.md) — people who have helped move the project forward
+- [Security policy](SECURITY.md) — reporting a vulnerability and how issues are triaged
 - [Changelog](CHANGELOG.md) — per-variant release history
 
 ---

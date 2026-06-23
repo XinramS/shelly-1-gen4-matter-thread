@@ -39,7 +39,7 @@ If you want to work on something larger, open an issue first to talk through the
 
 ## Reporting issues
 
-Open a [GitHub issue](../../../issues/new) with:
+For a suspected security vulnerability, an attacker-reachable flaw or a credential or key exposure, use private reporting as described in the [security policy](../SECURITY.md) rather than a public issue. For functional bugs, including fail-safe and reliability issues, open a [GitHub issue](../../../issues/new) with:
 
 - **Hardware:** Shelly 1 Gen4 PCB revision (silkscreened on the board), the variant, and the firmware version you're running.
 - **Ecosystem:** Apple Home, Google Home, Alexa, or Home Assistant, and what provides Thread on your network (a Thread Border Router, or an iPhone 15 Pro or newer).
