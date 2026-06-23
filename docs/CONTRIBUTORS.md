@@ -16,6 +16,7 @@ If your contribution fits that bar and I missed it, open an issue and I will add
 |---|---|
 | [TomasMcGuinness](https://github.com/tomasmcguinness) | Contributed the Shelly 1 Gen4 Light Switch variant. |
 | [DaveR2408](https://github.com/DaveR2408) | Funded a Shelly 2PM Gen4 unit. |
+| ElkanRoelen | Funded #2 Shelly 1 Mini Gen4 unit. |
 
 ---
 
