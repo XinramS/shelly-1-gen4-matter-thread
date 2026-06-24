@@ -27,8 +27,9 @@ __pycache__/
 # Sensitive — never commit original firmware backup
 shelly-1-gen4-original-*.bin
 
-# Release binaries — these go in GitHub Releases
+# Release binaries, ota zips — these go in GitHub Releases
 automatous-io-shelly-1-gen4-*.bin
+automatous-io-shelly-1-gen4-*.zip
 
 # IDF component manager
 idf_component_manager.yml
