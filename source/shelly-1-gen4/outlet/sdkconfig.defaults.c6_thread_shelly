@@ -66,3 +66,7 @@ CONFIG_DEFAULT_DEVICE_HARDWARE_VERSION=0
 # Hardware version (numeric; matches Shelly PCB rev v0.1.2)
 # String "v0.1.2" set via CHIPProjectConfig.h
 CONFIG_CHIP_PROJECT_CONFIG="main/CHIPProjectConfig.h"
+
+# Device Identification Options
+# Set a unique variant PID for OTA
+CONFIG_DEVICE_PRODUCT_ID=0x8004
