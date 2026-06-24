@@ -29,7 +29,7 @@ This guide covers flashing the Automatous Matter over Thread firmware onto a She
 - [Enter flash mode](#enter-flash-mode)
 - [Flash with ESPConnect](#flash-with-espconnect)
 - [Restoring stock firmware](#restoring-stock-firmware)
-- [Command line flashing with esptool (advanced)](#command-line-flashing-with-esptool-advanced)
+- [Command line flashing with esptool](#command-line-flashing-with-esptool)
 
 ---
 
@@ -97,10 +97,12 @@ The Shelly enters bootloader (flash) mode when GPIO0 is held low at power-up.
 
 ESPConnect is a browser-based ESP32 flashing tool built on Web Serial. No installation required. It works in Chrome, Edge, or any Chromium-based browser on macOS, Windows, and Linux.
 
+> 💡 **Prefer the command line?** You can do the entire backup, verify, and flash with esptool instead a hybrid of both tools. Skip to [Command line flashing with esptool](#command-line-flashing-with-esptool).
+
 ### 1. Connect to the Shelly
 
 1. Put the Shelly into flash mode (Pin 6 GPIO0 bridged to Pin 7 GND, then power up via 3.3V).
-2. Open [ESPConnect](https://thelastoutpostworkshop.github.io/microcontroller_devkit/espconnect/) in your browser.
+2. Open [ESPConnect](https://thelastoutpostworkshop.github.io/ESPConnect/) in your browser.
 3. Click **Connect** and select your USB-UART serial port from the browser dialog.
 4. Set baud rate to **115200**. Slower than the default, but more reliable for the long backup read.
 5. ESPConnect will display chip info confirming the ESP32-C6 is detected, including the device's **MAC address**. Note this down, you will use it to label your backup file. If you see "Failed to connect" or no chip info, the Shelly is not in flash mode. Recheck the GPIO0–GND bridge and re-power the device.
@@ -109,18 +111,18 @@ ESPConnect is a browser-based ESP32 flashing tool built on Web Serial. No instal
 
 > This step is essential. The backup is the only way to restore your device to its factory state. **Do not skip it**.
 
-> The full 8MB image includes the device's factory-provisioned keys, which enable Shelly Cloud and official OTA updates. This is why a complete backup is what makes restoration possible: a partial backup cannot bring those keys back, and without them the change is one-way.
+> The full-chip image includes the device's factory-provisioned keys, which enable Shelly Cloud and official OTA updates. This is why a complete backup is what makes restoration possible: a partial backup cannot bring those keys back, and without them the change is one-way.
 
 1. In the left navigation, click **Flash Tools**.
 2. Click **Download Flash Backup**.
-3. ESPConnect will read the entire 8MB flash and download it as a `.bin` file. This takes 5–10 minutes at 115200 baud. Do not disconnect or close the browser during the read.
+3. ESPConnect will read the entire flash and download it as a `.bin` file. This takes 5–10 minutes at 115200 baud. Do not disconnect or close the browser during the read.
 4. Rename the downloaded file to include the device's MAC address, e.g. `shelly-1-gen4-stock-AABBCCDDEEFF.bin`.
-5. **Verify the file size is approximately 8MB (8,388,608 bytes).** A smaller file means the read was incomplete or interrupted; redo the backup before proceeding.
+5. **Verify the download against the chip.** ESPConnect can save the backup but has no built-in way to check that downloaded file against the chip (its integrity tool hashes the chip, not your saved file), so this step uses the command line. It is worth the detour. The backup is your only way back to stock, and verifying confirms the file is complete and matches the chip instead of assuming it. With the Shelly still in flash mode (disconnect ESPConnect first to free the serial port), run esptool's `verify_flash` against your saved file. A `verify OK (digest matched)` result means the backup is safe to keep; a `verify FAILED`, or fewer bytes checked than the chip's flash size, means redo it. The command, esptool setup, and how to read the output are in [Command line flashing with esptool](#command-line-flashing-with-esptool).
 6. Store the backup somewhere safe. If you are flashing multiple Shellies, keep each MAC-labeled backup separate. They should not be interchanged.
 
 ### 3. Flash the Automatous firmware
 
-1. Still in **Flash Tools**, click **Flash Firmware**.
+1. In ESPConnect's **Flash Tools**, click **Flash Firmware** (reconnect ESPConnect first if you left it to verify the backup; the Shelly is still in flash mode).
 2. Select the latest release `.bin` from your downloads.
 3. Set flash offset to `0x0`.
 4. Check **Erase entire flash before writing**.
@@ -157,7 +159,7 @@ You should see boot logs followed by `Commissioning Window Opened`. This confirm
 
 ## Restoring stock firmware
 
-> ✅ **Stock restore is verified working, including cloud and OTA.** A full-chip restore returns the device to factory state with Shelly Cloud connectivity and official OTA updates intact. Your Shelly will create its `shelly-XXXXXX` setup AP, pair with the Shelly app, and behave identically to a factory unit. This recovery depends on having the full 8MB backup. For the test record and the reasoning, see [Warranty, Factory Keys, and Reversibility](REVERSIBILITY.md#uart-path-verified-recoverable).
+> ✅ **Stock restore is verified working, including cloud and OTA.** A full-chip restore returns the device to factory state with Shelly Cloud connectivity and official OTA updates intact. Your Shelly will create its `shelly-XXXXXX` setup AP, pair with the Shelly app, and behave identically to a factory unit. This recovery depends on having the full-chip backup. For the test record and the reasoning, see [Warranty, Factory Keys, and Reversibility](REVERSIBILITY.md#uart-path-verified-recoverable).
 
 If you want to revert to the original Shelly firmware:
 
@@ -169,7 +171,7 @@ If you want to revert to the original Shelly firmware:
 
 ---
 
-## Command line flashing with esptool (advanced)
+## Command line flashing with esptool
 
 Requires [esptool](https://github.com/espressif/esptool) installed. On macOS/Linux: `pip install esptool`. On Windows: install via pip, or download the standalone binary from the releases page.
 
@@ -187,13 +189,21 @@ Device information that includes Mac Address:
 esptool.py --chip esp32c6 --port <PORT> --baud 115200 chip_id
 ```
 
-Backup your original firmware:
+Backup your original firmware. `ALL` reads from offset `0x0` to the end of flash, so it captures the whole chip whatever its capacity, with no need to know or hardcode the size:
 
 ```bash
 esptool.py --chip esp32c6 --port <PORT> --baud 115200 \
-  read_flash 0x0 0x800000 shelly-1-gen4-stock-<MAC>.bin
+  read_flash 0x0 ALL shelly-1-gen4-stock-<MAC>.bin
 ```
-This reads the entire 8MB flash. Verify the resulting file is exactly 8,388,608 bytes before proceeding.
+
+Verify the backup against the chip:
+
+```bash
+esptool.py --chip esp32c6 --port <PORT> --baud 115200 \
+  verify_flash 0x0 shelly-1-gen4-stock-<MAC>.bin
+```
+
+esptool's output gives you both checks at once. The connection banner reports the chip's flash size (`Features: ... Embedded Flash 8MB`), and the verify line reports how many bytes it checked against your file (`Verifying 0x800000 (8388608) bytes ...`). A complete, intact backup shows the verified byte count matching the chip's flash size and ends in `-- verify OK (digest matched)`. A smaller byte count than the chip's flash means the file is truncated; a `verify FAILED` means it is corrupt. Redo the backup in either case. This works on any backup of this device, including one made in ESPConnect, with the Shelly in flash mode.
 
 Erase flash:
 ```bash
@@ -208,6 +218,12 @@ esptool.py --chip esp32c6 --port <PORT> --baud 115200 \
 ```
 
 **Restore the original firmware:**
+
+Erase the chip, then write your saved backup:
+
+```bash
+esptool.py --chip esp32c6 --port <PORT> --baud 115200 erase_flash
+```
 
 ```bash
 esptool.py --chip esp32c6 --port <PORT> --baud 115200 \
