@@ -2,7 +2,21 @@
 
 All notable changes to this firmware are recorded here. The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project follows [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
-Each firmware variant versions independently, so releases are grouped by variant. Within the v1.x line of a variant the NVS schema is stable, and an in-place upgrade through the ESP-IDF CLI preserves commissioning. Switching between variants always requires erase and re-commission, because each variant is a different Matter device type.
+Each firmware variant versions independently. Most releases are grouped by variant below. The 2.0.0 release made the same change to all four variants, so it is recorded once under All variants rather than repeated per variant. Within a variant's v1.x line the NVS schema is stable, and an in-place upgrade through the ESP-IDF CLI preserves commissioning. Moving from any v1.x build to 2.0.0 is the exception. The partition layout changed and will require a one-time full reflash that erases commissioning, after which Matter OTA preserves it for future updates. Switching between variants always requires erase and re-commission, because each variant is a different Matter device type.
+
+## All variants
+
+### [2.0.0] - 2026-06-25
+
+Web UI install, Matter OTA updates, and a stock-aligned partition layout, the same change across all four variants. Moving from any v1.x build is a one-time full reflash that erases commissioning.
+
+#### Added
+- Web UI install. A packaged `automatous-io-shelly-1-gen4-{variant}-vX.Y.Z-ota.zip` installs through the Shelly web UI, with no UART adapter required. Built by `scripts/make-webui-ota-zip.py`.
+- Matter OTA updates. A `.ota` image updates a commissioned device over Thread through Home Assistant's Matter Server, preserving commissioning, Thread credentials, and ecosystem pairings. Built by `scripts/make-matter-ota.py`.
+
+#### Changed
+- Partition layout now follows the stock Shelly 1 Gen4 offsets, with A/B app slots so one `partitions.csv` serves both UART flashing and the Web UI OTA. Moving to it from any v1.x build is a one-time full reflash over UART that erases commissioning; updates from 2.0.0 onward preserve it. Drops the `fctry` and `phy_init` partitions, since the DAC is compiled in and PHY data lives in the app.
+- Distinct Matter Product ID per variant (Light `0x8001`, Light Switch `0x8002`, Opener `0x8003`, Outlet `0x8004`); Matter OTA images can only target the variant it was built for.
 
 ## Light
 

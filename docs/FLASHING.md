@@ -2,13 +2,20 @@
 
 **[README](../README.md)** > **Flashing Guide** · [Report an issue](../../../issues/new)
 
-This guide covers flashing the Automatous Matter over Thread firmware onto a Shelly 1 Gen4. The full process takes about 15 minutes: 5 minutes to wire up, 5–10 minutes to back up the original firmware, and 1–2 minutes to flash the new firmware.
+This guide covers flashing the Automatous Matter over Thread firmware onto a Shelly 1 Gen4. There are two ways to flash:
+
+- **[Shelly web UI](#flash-with-the-shelly-web-ui)** — over the network, with no soldering and no UART adapter. The fastest path but it cannot back up the original firmware. Treat it as effectively one-way.
+- **USB-UART** — more setup, but it captures a full backup of the stock firmware first, keeping the device fully reversible. About 15 minutes: 5 minutes to wire up, 5–10 minutes to back up, and 1–2 minutes to flash.
+
+If you want the option to return to stock, take a backup over UART before using the web UI.
+
+Once the firmware is up and running, updates are applied through Home Assistant with Matter OTA.
 
 ---
 
 ## Safety warning
 
-> ⚠️ **Never connect the Shelly to AC mains while flashing.** The programming header is not galvanically isolated from the relay circuitry. Connecting the Shelly to mains voltage AND a USB-UART adapter simultaneously can cause:
+> ⚠️ **Never connect the Shelly to AC mains while flashing via UART.** The programming header is not galvanically isolated from the relay circuitry. Connecting the Shelly to mains voltage AND a USB-UART adapter simultaneously can cause:
 > - Personal electrocution risk
 > - Permanent destruction of the Shelly
 > - Permanent destruction of your computer's USB port (or the entire computer)
@@ -17,13 +24,15 @@ This guide covers flashing the Automatous Matter over Thread firmware onto a She
 
 > 💡 **Bench testing note.** The Shelly can be fully flashed, commissioned, and tested over the USB-UART 3.3V line, but **the relay will not physically click at 3.3V**. The relay coil needs full mains voltage to actuate. Bench testing over 3.3V verifies firmware flash success, Matter commissioning, GPIO behavior, LED states, and that your smart home app can send commands. You will not hear the relay click during bench testing. This is expected, not a bug. Verify everything else works first, then install with confidence and skip the headache of pulling the Shelly back out of the wall if something didn't work.
 
-> ⚠️ **Warranty and responsibility.** Installing this firmware voids your Shelly warranty, and Shelly cannot provide technical support for a device running third-party code. You assume all responsibility for any damage, data loss, or device failure. Flashing also removes the factory keys that enable Shelly Cloud and official OTA updates, so treat it as one-way unless you keep the full-chip backup you make before flashing. See [Warranty, Factory Keys, and Reversibility](REVERSIBILITY.md) for the detail.
+> ⚠️ **Warranty and responsibility.** Installing this firmware voids your Shelly warranty, and Shelly cannot provide technical support for a device running third-party code. You assume all responsibility for any damage, data loss, or device failure. Flashing also removes the factory keys that enable Shelly Cloud and official OTA updates. Only the UART method can capture the full-chip backup that restores them, so a web UI flash is permanent and a UART flash is reversible only if you keep that backup. See [Warranty, Factory Keys, and Reversibility](REVERSIBILITY.md) for the detail.
 
 
 ## Contents
 
 - [Safety warning](#safety-warning)
 - [Hardware revision](#hardware-revision)
+- [Flash with the Shelly web UI](#flash-with-the-shelly-web-ui)
+- [Flash with USB-UART](#flash-with-usb-uart)
 - [What you will need](#what-you-will-need)
 - [CP2102 to Shelly wiring](#cp2102-to-shelly-wiring)
 - [Enter flash mode](#enter-flash-mode)
@@ -35,7 +44,29 @@ This guide covers flashing the Automatous Matter over Thread firmware onto a She
 
 ## Hardware revision
 
-Tested on Shelly 1 Gen4 hardware revision **v0.1.2** (printed on the PCB). Other revisions should work but have not been verified. If you have a different revision, please [open an issue](../../../issues/new) with your findings.
+Tested on several Shelly 1 Gen4s, hardware revision **v0.1.2** (printed on the PCB). Other revisions should work but have not been verified. If you have a different revision, please [open an issue](../../../issues/new) with your findings.
+
+---
+
+## Flash with the Shelly web UI
+
+The fastest way to install this firmware is the Shelly web UI, over your network, with no UART adapter, wiring, or soldering required. The USB-UART method in the rest of this guide is more involved but it is the only path that captures a full backup of the original firmware.
+
+> ⚠️ **The web UI flash is effectively one-way.** The web UI cannot read the chip in order to make the full-chip backup that restores the device to factory state, including the keys that enable Shelly Cloud and official OTA. If you want the option to return to stock, [back up over UART](#2-back-up-the-original-shelly-firmware) first, or accept that the change is permanent. See [Reversibility](REVERSIBILITY.md).
+
+> **The device must be in its normal WiFi mode**, reachable on your WiFi network, and running recent stock firmware (verified on both 1.7.0 and 1.7.5).
+
+1. Download the variant's web UI package, `automatous-io-shelly-1-gen4-{variant}-vX.Y.Z-ota.zip` from the [latest release](../../../releases/latest). This is the `.zip`, not the `.bin`.
+2. Open the Shelly's web UI in a browser at its IP address on your network.
+3. In the device's firmware settings, choose to install firmware from a file and select the `.zip` you downloaded.
+4. Confirm the update. The device flashes the new firmware and reboots into BLE commissioning mode, and the LED will rapidly blink. If it does not reboot automatically, remove and reapply power. Depending on the NVS state, you may also need to [factory reset](COMMISSIONING.md#factory-reset) the Shelly to get it into BLE commissioning mode by holding the onboard relay button for several seconds.
+5. Continue to [Commissioning](COMMISSIONING.md).
+
+---
+
+## Flash with USB-UART
+
+The USB-UART method is more involved. It needs a USB-UART adapter and a few minutes of wiring but it backs up the original firmware first and keeps the device fully reversible. Everything below, from wiring through flashing and restoring, is part of this method.
 
 ---
 
@@ -109,7 +140,7 @@ ESPConnect is a browser-based ESP32 flashing tool built on Web Serial. No instal
 
 ### 2. Back up the original Shelly firmware
 
-> This step is essential. The backup is the only way to restore your device to its factory state. **Do not skip it**.
+> This step is essential. The backup is the only way to restore your device to its factory state. **I strongly suggest you do not skip it**.
 
 > The full-chip image includes the device's factory-provisioned keys, which enable Shelly Cloud and official OTA updates. This is why a complete backup is what makes restoration possible: a partial backup cannot bring those keys back, and without them the change is one-way.
 
@@ -128,7 +159,7 @@ ESPConnect is a browser-based ESP32 flashing tool built on Web Serial. No instal
 4. Check **Erase entire flash before writing**.
 5. Click **Flash** and wait for the operation to complete (1–2 minutes). ESPConnect shows a progress bar and a success message when done.
 
-> **Re-flashing erases commissioning.** Flashing the merged binary with "Erase entire flash before writing" wipes the whole flash, including stored Matter commissioning. A first flash over stock firmware has nothing to lose, but a device that was already commissioned, or one you are switching to a different variant, will need to be re-added to your ecosystems afterward. To update a build without re-pairing, see the ESP-IDF CLI flash path in [Building from Source](BUILDING.md#flash-your-build).
+> **Re-flashing erases commissioning.** Flashing the merged binary with "Erase entire flash before writing" wipes the whole flash, including stored Matter commissioning. A first flash over stock firmware has nothing to lose, but a device that was already commissioned, or one you are switching to a different variant, will need to be re-added to your ecosystems afterward. To update without re-pairing, the device takes [updates](UPDATING.md) through Home Assistant with Matter OTA, or you can use the ESP-IDF CLI flash path in [Building from Source](BUILDING.md#flash-your-build).
 
 ### 4. Boot the new firmware
 
@@ -178,9 +209,9 @@ Requires [esptool](https://github.com/espressif/esptool) installed. On macOS/Lin
 Throughout these commands, replace:
 - `<PORT>` with your serial port (`/dev/cu.usbserial-XXXX` on macOS, `/dev/ttyUSB0` on Linux, `COM3` on Windows)
 - `<MAC>` with the Shelly's MAC address (read from `chip_id` below)
-- `<VERSION>` with the firmware release version (e.g. `v1.2.1`)
+- `<VERSION>` with the firmware release version (in the form `vX.Y.Z`)
 
-Put the Shelly into flash mode before each command (GPIO0 bridged to GND, then power up via 3.3V).
+Put the Shelly into flash mode before running each command (GPIO0 bridged to GND, then power up via 3.3V).
 
 **Identify the chip and read the MAC address:**
 
@@ -203,7 +234,7 @@ esptool.py --chip esp32c6 --port <PORT> --baud 115200 \
   verify_flash 0x0 shelly-1-gen4-stock-<MAC>.bin
 ```
 
-esptool's output gives you both checks at once. The connection banner reports the chip's flash size (`Features: ... Embedded Flash 8MB`), and the verify line reports how many bytes it checked against your file (`Verifying 0x800000 (8388608) bytes ...`). A complete, intact backup shows the verified byte count matching the chip's flash size and ends in `-- verify OK (digest matched)`. A smaller byte count than the chip's flash means the file is truncated; a `verify FAILED` means it is corrupt. Redo the backup in either case. This works on any backup of this device, including one made in ESPConnect, with the Shelly in flash mode.
+esptool's output gives you both checks at once. The connection banner reports the chip's flash size (`Features: ... Embedded Flash 8MB`), and the verify line reports how many bytes it checked against your file (`Verifying 0x800000 (8388608) bytes ...`). A complete intact backup shows the verified byte count matching the chip's flash size and ends in `-- verify OK (digest matched)`. A smaller byte count than the chip's flash means the file is truncated; a `verify FAILED` means it is corrupt. Redo the backup in either case. This works on any backup of this device, including one made in ESPConnect.
 
 Erase flash:
 ```bash
@@ -240,7 +271,8 @@ After flashing, remove the GPIO0–GND bridge and power-cycle the Shelly to boot
 - [Why Matter over Thread](WHY.md) — the rationale for Matter over Thread
 - [Reversibility](REVERSIBILITY.md) — warranty, factory keys, and how reversible flashing is
 - [Commissioning](COMMISSIONING.md) — pairing the device and reading the status LED
-- [Power Consumption](POWER.md) — measured draw and the Thread router design choice
+- [Updating](UPDATING.md) — keeping a device current after flashing
+- [Power Consumption](POWER.md) — measured draw and the Thread Router design choice
 - [Building from Source](BUILDING.md) — compiling the firmware yourself
 - [Certification](CERTIFICATION.md) — uncertified status and test credentials
 - [Roadmap](ROADMAP.md) — current known limitations and planned work

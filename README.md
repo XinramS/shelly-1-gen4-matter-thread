@@ -7,7 +7,7 @@
 [![Stars](https://img.shields.io/github/stars/automatous-io/shelly-1-gen4-matter-thread?style=social)](../../stargazers)
 [![Buy Me a Coffee](https://img.shields.io/badge/Buy_Me_a_Coffee-support-FFDD00?logo=buymeacoffee&logoColor=black)](https://buymeacoffee.com/automatous.io)
 
-> **⚠️ Disclaimer.** Installing this firmware voids your Shelly warranty, and Shelly cannot provide technical support for a device running third-party code. It removes the factory keys that enable Shelly Cloud and official OTA updates, so treat flashing as one-way unless you keep the full-chip backup you make before flashing. Incorrect flashing can brick your device, so always back up your original firmware before proceeding. You assume all responsibility for any damage, data loss, or device failure. This project is not affiliated with Shelly, Allterco Robotics, CSA, or Espressif Systems. See [Warranty, Factory Keys, and Reversibility](docs/REVERSIBILITY.md).
+> **⚠️ Disclaimer.** Installing this firmware voids your Shelly warranty, and Shelly cannot provide technical support for a device running third-party code. It removes the factory keys that enable Shelly Cloud and official OTA updates. Treat flashing as one-way unless you keep the full-chip backup you make before flashing. Incorrect flashing can brick your device, so always back up your original firmware before proceeding if reversibility is important to you. You assume all responsibility for any damage, data loss, or device failure. This project is not affiliated with Shelly, Allterco Robotics, CSA, or Espressif Systems. See [Warranty, Factory Keys, and Reversibility](docs/REVERSIBILITY.md).
 
 The first third-party open source Matter over Thread firmware for the Shelly 1 Gen4. It works natively with Apple Home, Google Home, Alexa, and Home Assistant. No Shelly app, no cloud, no WiFi. The Gen4's ESP32-C6 has an 802.15.4 radio that stock firmware uses for Zigbee. Stock firmware also supports Matter over WiFi. This firmware reconfigures the 802.15.4 radio to run Thread, which unlocks Matter over Thread.
 
@@ -58,37 +58,34 @@ The Light Switch variant, contributed by [Tomas McGuinness](https://github.com/t
 
 ## Quick start
 
-**Have a [way onto Thread](#compatibility) (a Thread Border Router or an iPhone 15 Pro or newer), a USB-UART adapter, and a 1.27mm to 2.54mm adapter? Flash and go.**
+Flash via the Shelly web UI over your WiFi network, no UART adapter required. This is the fastest way to flash but it cannot create a backup of the stock firmware and should be considered one-way. See [Reversibility](docs/REVERSIBILITY.md).
 
-1. [Download the latest release](../../releases/latest). Grab the `.bin` for the [variant](#variants) you want, named `automatous-io-shelly-1-gen4-{variant}-vX.Y.Z.bin` (for example the `light`, `outlet`, `opener`, or `light-switch` build).
-2. [Enter flash mode](docs/FLASHING.md#enter-flash-mode) on your Shelly.
-3. [Back up your original firmware](docs/FLASHING.md#2-back-up-the-original-shelly-firmware) and flash the latest release with [ESPConnect](docs/FLASHING.md#flash-with-espconnect).
-4. [Commission](docs/COMMISSIONING.md) with your smart home app.
+1. [Download the latest release](../../releases/latest) and grab the web UI package for your preferred [variant](#variants).
+2. [Install it through the Shelly web UI](docs/FLASHING.md#flash-with-the-shelly-web-ui).
+3. [Commission](docs/COMMISSIONING.md) with your smart home app.
 
-The full flashing process takes about 15 minutes. See the [Flashing Guide](docs/FLASHING.md) for wiring diagrams, photos, safety warnings, and a command-line path.
-
-It is fully reversible with the UART flashing method this guide uses. UART captures a full-chip backup of the stock firmware before flashing (step 3), including the factory keys that enable Shelly Cloud and OTA, so you can restore the device to factory state at any time with cloud and OTA intact. Stock restore is [verified working](docs/FLASHING.md#restoring-stock-firmware). That full-chip backup can only be captured over UART. Without it, flashing is one-way.
-
-> ⚠️ **Before you start.** Never connect the Shelly to AC mains while flashing. The programming header is not galvanically isolated from mains circuitry. See [the full safety warning](docs/FLASHING.md#safety-warning).
+Once it is up and running, [updates are available](docs/UPDATING.md) through Home Assistant with Matter OTA.
 
 ---
 
 ## Features
 
+- Shelly web UI install, with no UART adapter required (unless you want [reversibility](docs/REVERSIBILITY.md)).
+- Updates through Home Assistant with Matter OTA.
 - Physical button toggle on the onboard relay button.
 - External wall switch input on the SW terminal.
 - Configurable power-on behavior through the Matter StartUpOnOff attribute.
 - Status LED indication for BLE advertising, Thread connecting, and Thread connected.
 - Identify support. Blink the LED on command from any Matter controller to locate the device.
-- Factory reset via long press on the onboard relay button.
-- Full Thread Device mode. Adds a Thread router to your mesh for other devices.
+- Factory reset via long press of the onboard relay button.
+- Full Thread Device mode. Adds a Thread Router to your mesh for other devices.
 - Multi-fabric. Commission to multiple ecosystems at once, with state synced across all of them.
 
 ---
 
 ## Compatibility
 
-Matter over Thread needs a way onto a Thread network to commission and reach the Shelly. That can be a Thread Border Router, a device with a built-in Thread radio such as an iPhone 15 Pro or newer, or both. The table below lists tested and supported options.
+Matter over Thread devices need a path onto a Thread network to commission and reach the Shelly. That can be a Thread Border Router, a device with a built-in Thread radio such as an iPhone 15 Pro or newer, or both. The table below lists tested and supported options.
 
 | Device | Provides Thread | Tested |
 |---|---|---|
@@ -104,13 +101,14 @@ Matter over Thread needs a way onto a Thread network to commission and reach the
 
 ## Documentation
 
-Most of it is in [`docs/`](docs/), with the changelog and security policy at the repo root. A typical path is to read the [Flashing Guide](docs/FLASHING.md) and its safety warning, flash the firmware, then [commission](docs/COMMISSIONING.md) the device to your smart home.
+Most of it is in [`docs/`](docs/), with build [`scripts/`](scripts/), the changelog, and the security policy at the repo root. A typical path is to read the [Flashing Guide](docs/FLASHING.md), and its safety warning, flash the firmware, then [commission](docs/COMMISSIONING.md) the device to your smart home.
 
 - [Why Matter over Thread](docs/WHY.md) — the rationale for Matter over Thread
 - [Flashing Guide](docs/FLASHING.md) — wiring, backing up stock firmware, and flashing
 - [Reversibility](docs/REVERSIBILITY.md) — warranty, factory keys, and how reversible flashing is
 - [Commissioning](docs/COMMISSIONING.md) — pairing the device and reading the status LED
-- [Power Consumption](docs/POWER.md) — measured draw and the Thread router design choice
+- [Updating](docs/UPDATING.md) — keeping a device current after flashing
+- [Power Consumption](docs/POWER.md) — measured draw and the Thread Router design choice
 - [Building from Source](docs/BUILDING.md) — compiling the firmware yourself
 - [Certification](docs/CERTIFICATION.md) — uncertified status and test credentials
 - [Roadmap](docs/ROADMAP.md) — current known limitations and planned work
@@ -128,6 +126,7 @@ shelly-1-gen4-matter-thread/
 ├── README.md          This file.
 ├── LICENSE            Apache 2.0.
 ├── docs/              Documentation and the images it references.
+├── scripts/           Build scripts that package the release artifacts.
 └── source/
     └── shelly-1-gen4/
         ├── light/         Matter On/Off Light, latching relay. Released.
