@@ -12,7 +12,7 @@ This guide covers building the Automatous firmware from source. If you just want
 - [Repository structure](#repository-structure)
 - [Setup](#setup)
 - [Build](#build)
-- [Merge bin files](#merge-bin-files)
+- [Build the release artifacts](#build-the-release-artifacts)
 - [Flash your build](#flash-your-build)
 
 ---
@@ -92,13 +92,25 @@ Run these in the same shell where you sourced the two `export.sh` scripts. ESP-I
 
 The `-DSDKCONFIG_DEFAULTS` flag points the build at `sdkconfig.defaults.c6_thread_shelly`, which holds the C6 and Thread settings. Without it the build will not produce a Matter over Thread image. `set-target` applies it once, and after that plain `idf.py build` rebuilds incrementally.
 
-The build produces individual `.bin` files in the `build/` directory. The application image is named after the variant, so the light build produces `build/light.bin` and the opener build produces `build/opener.bin` and so on. The `Project build complete` line at the end of the build prints its exact path.
+The build produces individual `.bin` files in the `build/` directory. The application image is named after the variant; the light build produces `build/light.bin` and the opener build produces `build/opener.bin` and so on. The `Project build complete` line at the end of the build prints its exact path.
 
 ---
 
-## Merge bin files
+## Build the release artifacts
 
-Replace `<VERSION>` with the release version, for example `v1.2.1`. The example merges the `light` build; for another variant, substitute its name in both the output filename and the `build/<variant>.bin` application image, for example `build/opener.bin`. To create a single combined `.bin` file suitable for flashing at offset `0x0`, matching the release binaries:
+Each install and update path needs a different packaged artifact, and all three come from the same build:
+
+| Artifact | Path it serves | Built with |
+|---|---|---|
+| `automatous-io-shelly-1-gen4-{variant}-vX.Y.Z.bin` | UART / ESPConnect full install | `esptool merge_bin` |
+| `automatous-io-shelly-1-gen4-{variant}-vX.Y.Z-ota.zip` | Shelly web UI install | `scripts/make-webui-ota-zip.py` |
+| `automatous-io-shelly-1-gen4-{variant}-vX.Y.Z.ota` | Matter OTA update | `scripts/make-matter-ota.py` |
+
+The examples below build the `light` variant; for another, point the script at its directory or substitute its name.
+
+### Merged binary (UART)
+
+A single `.bin` for flashing at offset `0x0`, matching the released binaries. Replace `<VERSION>` with the release version.
 
 ```bash
 esptool.py --chip esp32c6 merge_bin \
@@ -111,21 +123,39 @@ esptool.py --chip esp32c6 merge_bin \
   0x20000 build/light.bin
 ```
 
+### Web UI package
+
+The `.zip` that installs through the Shelly web UI. Run it from the repository root pointed at a variant directory:
+
+```bash
+python3 scripts/make-webui-ota-zip.py source/shelly-1-gen4/light
+```
+
+It reads the variant and version from the build, bundles the bootloader, partition table, otadata, and application with an empty filesystem image, and writes `automatous-io-shelly-1-gen4-{variant}-vX.Y.Z-ota.zip` next to the build.
+
+### Matter OTA image
+
+The `.ota` served to commissioned devices through Home Assistant. Run it in the same esp-matter environment you build in, since it calls `ota_image_tool.py` from the connectedhomeip checkout (found via `ESP_MATTER_PATH`):
+
+```bash
+python3 scripts/make-matter-ota.py source/shelly-1-gen4/light
+```
+
+It reads the vendor and product ID from the build's `sdkconfig` and the software version from `CHIPProjectConfig.h`; the image always matches the firmware it came from and can only target the variant it was built for. The output is `automatous-io-shelly-1-gen4-{variant}-vX.Y.Z.ota`. See [Updating](UPDATING.md) for how to serve it.
+
 ---
 
 ## Flash your build
 
-There are two ways to flash a build.
-
-**Merged binary, full install.** Flash the merged `.bin` with the [Flashing Guide](FLASHING.md), the same process used for the released binaries. This erases the whole flash, including the `nvs` partition, so a commissioned device loses its Matter fabric and must be re-commissioned. Use this for a first flash over stock firmware or any clean install.
-
-**ESP-IDF CLI, preserves commissioning.** To update a device already running this firmware without re-pairing, put the Shelly into [flash mode](FLASHING.md#enter-flash-mode), connect the UART adapter, and from the variant directory run the following. Replace `<PORT>` with your USB-UART serial port.
+To push a new build to a device already running this firmware without re-pairing it, put the Shelly into [flash mode](FLASHING.md#enter-flash-mode), connect the UART adapter, and from the variant directory run the following. Replace `<PORT>` with your USB-UART serial port.
 
 ```bash
 idf.py -p <PORT> flash monitor
 ```
 
-This writes the bootloader, partition table, and application image but leaves the `nvs` partition intact, so the Matter fabric and Thread credentials are preserved and the device does not need re-commissioning. No merge step is needed for this path. Do not use `idf.py erase-flash`, which wipes everything including commissioning.
+This writes the bootloader, partition table, and application image but leaves the `nvs` partition intact; Matter fabric and Thread credentials are preserved and the device does not need re-commissioning. Do not use `idf.py erase-flash`, which wipes everything including commissioning.
+
+For a first flash, or to install or update through a packaged artifact, see [Build the release artifacts](#build-the-release-artifacts) for which file each path uses, then the [Flashing Guide](FLASHING.md) for the merged `.bin` or web UI `.zip`, or [Updating](UPDATING.md) for the Matter `.ota`.
 
 ---
 
@@ -136,7 +166,8 @@ This writes the bootloader, partition table, and application image but leaves th
 - [Flashing Guide](FLASHING.md) — wiring, backing up stock firmware, and flashing
 - [Reversibility](REVERSIBILITY.md) — warranty, factory keys, and how reversible flashing is
 - [Commissioning](COMMISSIONING.md) — pairing the device and reading the status LED
-- [Power Consumption](POWER.md) — measured draw and the Thread router design choice
+- [Updating](UPDATING.md) — keeping a device current after flashing
+- [Power Consumption](POWER.md) — measured draw and the Thread Router design choice
 - [Certification](CERTIFICATION.md) — uncertified status and test credentials
 - [Roadmap](ROADMAP.md) — current known limitations and planned work
 - [Contributing](CONTRIBUTING.md) — reporting bugs and the firmware filename convention

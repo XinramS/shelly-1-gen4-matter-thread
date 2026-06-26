@@ -47,7 +47,7 @@ This is normal and expected. Tapping "Add Anyway" or the equivalent proceeds wit
 
 ## Test credentials
 
-The firmware uses the publicly available ESP-Matter test VID/PID. These are standard development credentials published for non-commercial use during firmware development.
+The firmware uses the publicly available ESP-Matter test VID/PIDs. These are standard development credentials published for non-commercial use during firmware development.
 
 Because every unit built from this firmware uses the same test credentials, they all share the same commissioning setup code and QR. That is fine for personal use, but it means the setup code is not a secret, and if you flash more than one device, commission them one at a time to avoid ambiguity during pairing. See [Before commissioning](COMMISSIONING.md#before-commissioning).
 
@@ -74,7 +74,8 @@ This project is not affiliated with, endorsed by, or sponsored by any of these o
 - [Flashing Guide](FLASHING.md) — wiring, backing up stock firmware, and flashing
 - [Reversibility](REVERSIBILITY.md) — warranty, factory keys, and how reversible flashing is
 - [Commissioning](COMMISSIONING.md) — pairing the device and reading the status LED
-- [Power Consumption](POWER.md) — measured draw and the Thread router design choice
+- [Updating](UPDATING.md) — keeping a device current after flashing
+- [Power Consumption](POWER.md) — measured draw and the Thread Router design choice
 - [Building from Source](BUILDING.md) — compiling the firmware yourself
 - [Roadmap](ROADMAP.md) — current known limitations and planned work
 - [Contributing](CONTRIBUTING.md) — reporting bugs and the firmware filename convention

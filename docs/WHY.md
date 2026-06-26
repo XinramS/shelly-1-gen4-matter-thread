@@ -65,7 +65,8 @@ If you would rather not flash third-party firmware, another option is to wait fo
 - [Flashing Guide](FLASHING.md) — wiring, backing up stock firmware, and flashing
 - [Reversibility](REVERSIBILITY.md) — warranty, factory keys, and how reversible flashing is
 - [Commissioning](COMMISSIONING.md) — pairing the device and reading the status LED
-- [Power Consumption](POWER.md) — measured draw and the Thread router design choice
+- [Updating](UPDATING.md) — keeping a device current after flashing
+- [Power Consumption](POWER.md) — measured draw and the Thread Router design choice
 - [Building from Source](BUILDING.md) — compiling the firmware yourself
 - [Certification](CERTIFICATION.md) — uncertified status and test credentials
 - [Roadmap](ROADMAP.md) — current known limitations and planned work

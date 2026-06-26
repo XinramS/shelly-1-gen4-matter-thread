@@ -2,7 +2,7 @@
 
 **[README](../README.md)** > **Commissioning** · [Report an issue](../../../issues/new)
 
-This guide covers pairing a freshly flashed Shelly 1 Gen4 to your smart home ecosystem, sharing one device across multiple ecosystems, reading the status LED, troubleshooting a stalled commissioning, and factory resetting the device. It notes the Opener variant's differences where they apply. If you have not flashed the firmware yet, start with the [Flashing Guide](FLASHING.md).
+This guide covers pairing a freshly flashed Shelly 1 Gen4 to your smart home ecosystem, sharing one device across multiple ecosystems, reading the status LED, troubleshooting a stalled commissioning, and factory resetting the device. It notes the Opener variant's differences where they apply. If you have not flashed the firmware yet, start with the [Flashing Guide](FLASHING.md). Once it is commissioned, [updates are available](UPDATING.md) through Home Assistant with Matter OTA, with commissioning preserved.
 
 ---
 
@@ -35,7 +35,7 @@ The LED follows Shelly's standard convention. A solid LED means connected and wo
 
 ## Before commissioning
 
-Commission devices one at a time. Power off or move away any other uncommissioned devices while you set each one up. All devices ship with the same pairing code, so a controller can get confused if several are advertising at once. Once a device is commissioned it gets a unique identity on your network. After commissioning, disconnect the UART from the Shelly and install it wherever you need it.
+Commission devices one at a time. Power off or move away any other uncommissioned devices running Automatous firmware while you set each one up. All devices ship with the same pairing code, so a controller can get confused if several are advertising at once. Once a device is commissioned it gets a unique identity on your network. After commissioning, disconnect the UART from the Shelly and install it wherever you need it.
 
 ![Matter setup QR code](images/matter_qrcode_20202021_3840.png)
 
@@ -65,7 +65,11 @@ Scan the QR code above with the Home app, or enter the setup code manually.
 
 Google Home and Alexa support Matter commissioning through their respective apps. Use setup code `3497-011-2332` or the QR code above when prompted. Google and Alexa hubs have not been directly tested, but the firmware should work with any Matter-compliant hub. Let us know and we will update the compatible hubs section.
 
-Home Assistant commissions through its Matter integration. Use the same setup code or QR code.
+Home Assistant commissions through its Matter integration. Use the same setup code or QR code. Because this firmware uses Matter test credentials, Home Assistant's Matter Server needs Test Net DCL enabled before it will commission an uncertified device like this one.
+
+Turn on **Enable test-net DCL usage** in the Matter Server add-on configuration and restart the add-on. This is the same setting that later lets Home Assistant serve [Matter OTA updates](UPDATING.md), so enabling it now covers both commissioning and updates.
+
+Verified on **Matter Server add-on, version 9.0.2**.
 
 ---
 
@@ -115,7 +119,7 @@ If Home Assistant's Matter integration hangs during commissioning or shows "sett
 
 ## Factory reset
 
-Hold the onboard relay button for several seconds. The device resets and re-enters BLE commissioning mode. The LED returns to the rapid blink pattern from the [status LED reference](#status-led-reference), which confirms the reset worked. Remove the device from any ecosystems you added it to before re-commissioning.
+Hold the onboard relay button for several seconds. On this firmware that clears the device's Matter commissioning and returns it to BLE commissioning mode. It does not restore the original Shelly firmware or factory state; the Automatous firmware stays installed, and going back to stock requires the UART backup (see [Reversibility](REVERSIBILITY.md)). The LED returns to the rapid blink pattern from the [status LED reference](#status-led-reference), which confirms the reset worked. Remove the device from any ecosystems you added it to before re-commissioning.
 
 ---
 
@@ -125,7 +129,8 @@ Hold the onboard relay button for several seconds. The device resets and re-ente
 - [Why Matter over Thread](WHY.md) — the rationale for Matter over Thread
 - [Flashing Guide](FLASHING.md) — wiring, backing up stock firmware, and flashing
 - [Reversibility](REVERSIBILITY.md) — warranty, factory keys, and how reversible flashing is
-- [Power Consumption](POWER.md) — measured draw and the Thread router design choice
+- [Updating](UPDATING.md) — keeping a device current after flashing
+- [Power Consumption](POWER.md) — measured draw and the Thread Router design choice
 - [Building from Source](BUILDING.md) — compiling the firmware yourself
 - [Certification](CERTIFICATION.md) — uncertified status and test credentials
 - [Roadmap](ROADMAP.md) — current known limitations and planned work

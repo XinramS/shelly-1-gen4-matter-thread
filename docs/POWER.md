@@ -31,7 +31,7 @@ The numbers are nearly identical because both radios stay continuously awake. Th
 
 This firmware runs the Shelly as a Thread Router in Full Thread Device mode, so it actively participates in routing packets for other Thread devices on your mesh. Router mode requires the radio to stay awake to relay traffic, so the device does not get the sleep-mode power savings that Thread is known for.
 
-This design choice prioritizes mesh extension. Each Shelly running this firmware adds a Thread router to your network, which improves coverage, reliability, latency, and network capacity for other Thread devices nearby.
+This design choice prioritizes mesh extension. Each Shelly running this firmware adds a Thread Router to your network, which improves coverage, reliability, latency, and network capacity for other Thread devices nearby.
 
 ---
 
@@ -50,6 +50,7 @@ For an AC powered device like the Shelly installed at home, the savings of Sleep
 - [Flashing Guide](FLASHING.md) — wiring, backing up stock firmware, and flashing
 - [Reversibility](REVERSIBILITY.md) — warranty, factory keys, and how reversible flashing is
 - [Commissioning](COMMISSIONING.md) — pairing the device and reading the status LED
+- [Updating](UPDATING.md) — keeping a device current after flashing
 - [Building from Source](BUILDING.md) — compiling the firmware yourself
 - [Certification](CERTIFICATION.md) — uncertified status and test credentials
 - [Roadmap](ROADMAP.md) — current known limitations and planned work
