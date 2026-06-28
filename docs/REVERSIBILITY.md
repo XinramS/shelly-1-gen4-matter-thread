@@ -4,7 +4,7 @@
 
 This page explains what installing third-party firmware does to a Shelly 1 Gen4, whether you can return the device to stock, and what that depends on.
 
-> ⚠️ **Default assumption: treat flashing as one-way.** You can only restore the device to factory state if you captured a full-chip backup over UART before flashing. Without that backup, flashing is irreversible. This is verified for the UART path and explained below.
+> ⚠️ **Default assumption: treat flashing as one-way.** You can only restore the device to a fully functional factory state if you captured a full-chip backup over UART before flashing. Without that backup, flashing is irreversible. This is verified for the UART path and explained below. **Read this whole document before attempting to flash your Shelly.**
 
 ---
 
@@ -15,6 +15,7 @@ This page explains what installing third-party firmware does to a Shelly 1 Gen4,
 - [Can you go back](#can-you-go-back)
 - [UART path, verified recoverable](#uart-path-verified-recoverable)
 - [Web UI path, one-way](#web-ui-path-one-way)
+- [The eFuse marker](#the-efuse-marker)
 - [Verification log](#verification-log)
 
 ---
@@ -22,6 +23,10 @@ This page explains what installing third-party firmware does to a Shelly 1 Gen4,
 ## What flashing changes
 
 Installing this firmware replaces the stock Shelly firmware, and that has consequences beyond the new features. It voids your warranty, and Shelly cannot provide technical support for a device running third-party code. It also removes the factory keys. Stock firmware uses factory-provisioned keys to reach Shelly Cloud and to receive official OTA updates; once the stock firmware is overwritten those services are unavailable until the original firmware is restored.
+
+Installing over the web UI has also been verified to burn a permanent marker into the chip's eFuse, which appears to record that the device has run non-Shelly firmware. It does not change how the device works and it does not block a return to stock, but it cannot be removed. See [The eFuse marker](#the-efuse-marker) for additional detail.
+
+This path also depends on Shelly, and they could narrow it. The install works because the stock web UI accepts the package and because a restored device still reconnects to Shelly Cloud and the official OTA service. A future stock release could refuse third-party packages, and the eFuse marker would give Shelly a reliable way to recognize a device flashed with third-party firmware and, if they chose, decline cloud or OTA service to it. None of that is happening as of today, but it is outside this project's control. Treat the current ease of install and restore as a snapshot, not a guarantee.
 
 None of this is a criticism of Shelly. The device is deliberately flashable, which is what makes this project possible. The point of this page is to be honest about the trade-off so you can make an informed decision.
 
@@ -31,7 +36,7 @@ None of this is a criticism of Shelly. The device is deliberately flashable, whi
 
 Shelly devices are provisioned at the factory with per-device keys and certificates. These authenticate the device to Shelly Cloud and to the official OTA update service, and they are unique per device.
 
-The keys reside in flash, in a factory or NVS type partition. A full-chip backup captures them regardless of which partition they sit in, because it copies every byte of the 8MB flash. Anything bound to eFuse, the one-time-programmable silicon, cannot be erased by flashing and survives no matter what you do. The recoverable-or-not question is therefore entirely about the flash-resident keys, and therefore entirely about whether your backup captured them. Restore the full flash image and the keys come back. Lose the image and they are gone.
+The keys reside in flash, in a factory or NVS type partition. A full-chip backup captures them regardless of which partition they sit in, because it copies every byte of the 8MB flash. Anything bound to eFuse, the one-time-programmable silicon, cannot be erased by flashing and survives no matter what you do. The recoverable-or-not question is therefore entirely about the flash-resident, and therefore entirely about whether your backup captured them. Restore the full flash image and the keys come back. Lose the image and they are gone.
 
 ---
 
@@ -50,7 +55,7 @@ This is not purely a matter of UART being safe and OTA being unsafe. A UART user
 
 ## UART path, verified recoverable
 
-The flashing procedure in the [Flashing Guide](FLASHING.md) reads the entire 8MB flash to a file before writing anything. Because that image includes the factory keys, restoring it returns the device to a genuine factory state.
+The flashing procedure in the [Flashing Guide](FLASHING.md) reads the entire 8MB flash to a file before writing anything. Because that image includes the factory keys, restoring it returns the device to a fully functional factory state. Functional is the precise word. The device behaves as factory, but a marker burned into eFuse during a web UI install cannot be undone by a restore. See [The eFuse marker](#the-efuse-marker).
 
 This has been tested, not assumed. On several Shelly 1 Gen4s of hardware revision v0.1.2, a full 8MB backup was taken before flashing then restored as a full image. After the restore the devices connected to Shelly Cloud and successfully applied a cloud-delivered OTA update, moving from `1.7.0-gbe7545d` to `1.7.5-g9979d16`. Both the Shelly Cloud connection and the cloud OTA update require the factory keys; a successful round-trip confirms the keys were preserved in the backup and restored intact.
 
@@ -72,11 +77,22 @@ The web UI is the easiest way in, and a UART backup is the only way back. If kee
 
 ---
 
+## The eFuse marker
+
+Installing through the Shelly web UI writes to eFuse. We saw this directly on devices whose eFuse read clean beforehand. The web UI install burned user-data eFuse BLOCK3 during the flash and verified the write by reading it back. It is interpreted as a marker that records the device has run non-Shelly firmware — the kind of flag a manufacturer could check on a returned unit. BLOCK3 is `BLOCK_USR_DATA`, a general-purpose user-data block (what Espressif's docs describe as space for user parameters), not secure boot or anti-rollback. The marker cannot be cleared by restoring a flash backup or by any other means.
+
+This is separate from the backup question above, and it does not change how the firmware works. A device flashed over the web UI can be identified afterward as having run third-party firmware.
+
+This is confirmed for the Shelly web UI install path. A direct UART flash does not run `shelly_update.cpp` and likely does not set the marker, but that has not been fully tested yet.
+
+---
+
 ## Verification log
 
 A running record of what has been tested, scoped to the exact conditions.
 
 - **2026-06-18 and 2026-06-24.** UART full-chip backup and restore on hardware revision v0.1.2. After restore, Shelly Cloud connected and a cloud OTA update applied, moving from `1.7.0-gbe7545d` to `1.7.5-g9979d16`. Confirms the UART full-chip path is reversible with the keys intact.
+- **2026-06-27.** Three Shelly 1 Gen4 units with eFuse read clean beforehand had third-party firmware installed through the Shelly web UI. The install burned user-data eFuse BLOCK3, logged as `BURN BLOCK3 - OK` and verified by read-back. The devices booted and ran the Automatous firmware afterward. Confirms the web UI install path writes a permanent marker into user-data eFuse.
 
 ---
 

@@ -7,7 +7,7 @@ This guide covers flashing the Automatous Matter over Thread firmware onto a She
 - **[Shelly web UI](#flash-with-the-shelly-web-ui)** — over the network, with no soldering and no UART adapter. The fastest path but it cannot back up the original firmware. Treat it as effectively one-way.
 - **USB-UART** — more setup, but it captures a full backup of the stock firmware first, keeping the device fully reversible. About 15 minutes: 5 minutes to wire up, 5–10 minutes to back up, and 1–2 minutes to flash.
 
-If you want the option to return to stock, take a backup over UART before using the web UI.
+If you want the option to return to stock functionality, take a backup over UART before using the web UI.
 
 Once the firmware is up and running, updates are applied through Home Assistant with Matter OTA.
 
@@ -24,7 +24,7 @@ Once the firmware is up and running, updates are applied through Home Assistant 
 
 > 💡 **Bench testing note.** The Shelly can be fully flashed, commissioned, and tested over the USB-UART 3.3V line, but **the relay will not physically click at 3.3V**. The relay coil needs full mains voltage to actuate. Bench testing over 3.3V verifies firmware flash success, Matter commissioning, GPIO behavior, LED states, and that your smart home app can send commands. You will not hear the relay click during bench testing. This is expected, not a bug. Verify everything else works first, then install with confidence and skip the headache of pulling the Shelly back out of the wall if something didn't work.
 
-> ⚠️ **Warranty and responsibility.** Installing this firmware voids your Shelly warranty, and Shelly cannot provide technical support for a device running third-party code. You assume all responsibility for any damage, data loss, or device failure. Flashing also removes the factory keys that enable Shelly Cloud and official OTA updates. Only the UART method can capture the full-chip backup that restores them, so a web UI flash is permanent and a UART flash is reversible only if you keep that backup. See [Warranty, Factory Keys, and Reversibility](REVERSIBILITY.md) for the detail.
+> ⚠️ **Warranty and responsibility.** Installing this firmware voids your Shelly warranty, and Shelly cannot provide technical support for a device running third-party code. You assume all responsibility for any damage, data loss, or device failure. Flashing also removes the factory keys that enable Shelly Cloud and official OTA updates. Only the UART method can capture the full-chip backup that restores them, so a web UI flash is permanent and a UART flash is reversible only if you keep that backup. **See [Warranty, Factory Keys, and Reversibility](REVERSIBILITY.md) before attempting to flash.**
 
 
 ## Contents
@@ -52,7 +52,7 @@ Tested on several Shelly 1 Gen4s, hardware revision **v0.1.2** (printed on the P
 
 The fastest way to install this firmware is the Shelly web UI, over your network, with no UART adapter, wiring, or soldering required. The USB-UART method in the rest of this guide is more involved but it is the only path that captures a full backup of the original firmware.
 
-> ⚠️ **The web UI flash is effectively one-way.** The web UI cannot read the chip in order to make the full-chip backup that restores the device to factory state, including the keys that enable Shelly Cloud and official OTA. If you want the option to return to stock, [back up over UART](#2-back-up-the-original-shelly-firmware) first, or accept that the change is permanent. See [Reversibility](REVERSIBILITY.md).
+> ⚠️ **The web UI flash is effectively one-way.** The web UI cannot read the chip in order to make the full-chip backup that restores the device to a fully functional factory state, including the keys that enable Shelly Cloud and official OTA. This path also writes a permanent marker to the chip's eFuse. If you want the option to return to stock, [back up over UART](#2-back-up-the-original-shelly-firmware) first, or accept that the change is permanent. See [Reversibility](REVERSIBILITY.md).
 
 > **The device must be in its normal WiFi mode**, reachable on your WiFi network, and running recent stock firmware (verified on both 1.7.0 and 1.7.5).
 
@@ -140,7 +140,7 @@ ESPConnect is a browser-based ESP32 flashing tool built on Web Serial. No instal
 
 ### 2. Back up the original Shelly firmware
 
-> This step is essential. The backup is the only way to restore your device to its factory state. **I strongly suggest you do not skip it**.
+> This step is essential. The backup is the only way to restore your device to its fully functional factory state. **I strongly suggest you do not skip it**.
 
 > The full-chip image includes the device's factory-provisioned keys, which enable Shelly Cloud and official OTA updates. This is why a complete backup is what makes restoration possible: a partial backup cannot bring those keys back, and without them the change is one-way.
 
@@ -190,7 +190,7 @@ You should see boot logs followed by `Commissioning Window Opened`. This confirm
 
 ## Restoring stock firmware
 
-> ✅ **Stock restore is verified working, including cloud and OTA.** A full-chip restore returns the device to factory state with Shelly Cloud connectivity and official OTA updates intact. Your Shelly will create its `shelly-XXXXXX` setup AP, pair with the Shelly app, and behave identically to a factory unit. This recovery depends on having the full-chip backup. For the test record and the reasoning, see [Warranty, Factory Keys, and Reversibility](REVERSIBILITY.md#uart-path-verified-recoverable).
+> ✅ **Stock restore is verified working, including cloud and OTA.** A full-chip restore returns the device to a fully functional factory state with Shelly Cloud connectivity and official OTA updates intact. Your Shelly will create its `shelly-XXXXXX` setup AP, pair with the Shelly app, and behave identically to a factory unit. This recovery depends on having the full-chip backup. For the test record and the reasoning, see [Warranty, Factory Keys, and Reversibility](REVERSIBILITY.md#uart-path-verified-recoverable).
 
 If you want to revert to the original Shelly firmware:
 
