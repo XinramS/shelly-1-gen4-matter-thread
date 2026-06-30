@@ -20,21 +20,35 @@ Build a Shelly Web UI OTA zip from a Gen4 variant's build output.
 Point it at a variant directory (defaults to the current one):
 
     python3 scripts/make-webui-ota-zip.py source/shelly-1-gen4/light
+    python3 scripts/make-webui-ota-zip.py source/shelly-1pm-gen4/outlet
+    python3 scripts/make-webui-ota-zip.py source/shelly-1-mini-gen4/outlet
+
 
 It reads the variant and version from build/project_description.json, pulls the
 bootloader, partition table, otadata and app from build/, adds an empty filesystem
-image, and writes automatous-io-shelly-1-gen4-<variant>-v<version>-ota.zip.
+image, and writes automatous-io-<hardware>-<variant>-v<version>-ota.zip, where
+<hardware> is the source/<hardware> directory the variant lives in.
+
+The Web UI OTA refuses a package whose name/compatible don't match the unit's Shelly
+hardware code. That code is looked up from the variant's hardware directory (see the
+HARDWARE table below) and can be overridden with --app-code/--compatible for testing 
+purposes.
 
 Every part in the zip comes from the build; no Shelly binaries are included. Shelly's
 OTA requires a boot part; the zip includes a bootloader with min_version 0.0.0. The
 device reads that as 0.0.0 and keeps its existing bootloader rather than flashing the
 bundled one, so nothing at offset 0x0 is overwritten.
 """
-import datetime, hashlib, json, os, sys, tempfile, zipfile
+import argparse, datetime, hashlib, json, os, sys, tempfile, zipfile
 
-# Fixed for every Gen4 variant; they share the S1G4 hardware and app code.
-APP_CODE     = "S1G4"
-COMPATIBLE   = "S1G4*"
+# Shelly's internal hardware codes, keyed by the source/<hardware> directory. Only
+# codes confirmed against real hardware belong here; read an unknown unit's code from
+# its stock Web UI device info before adding it.
+HARDWARE = {
+    "shelly-1-gen4": {"app_code": "S1G4", "compatible": "S1G4*"},
+    "shelly-1pm-gen4" : {"app_code": "S1PMG4", "compatible": "S1PMG4*"},
+    "shelly-1-mini-gen4" : {"app_code": "Mini1G4", "compatible": "Mini1G4*"},
+}
 PLATFORM     = "esp32c6"
 # Kept above any stock version; the device never refuses it as a downgrade. The
 # real firmware version is in the app and the zip filename and not here.
@@ -55,7 +69,23 @@ def digest(path):
 
 
 def main():
-    variant_dir = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else ".")
+    parser = argparse.ArgumentParser(description=__doc__,
+                                     formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument("variant_dir", nargs="?", default=".",
+                        help="variant directory (default: current)")
+    parser.add_argument("--app-code", help="Shelly code for the manifest 'name' (overrides the HARDWARE table)")
+    parser.add_argument("--compatible", help="Shelly string for the manifest 'compatible' (overrides the HARDWARE table)")
+    args = parser.parse_args()
+
+    variant_dir = os.path.abspath(args.variant_dir)
+    hardware = os.path.basename(os.path.dirname(variant_dir))
+    codes = HARDWARE.get(hardware, {})
+    app_code = args.app_code or codes.get("app_code")
+    compatible = args.compatible or codes.get("compatible")
+    if not app_code or not compatible:
+        sys.exit(f"unknown hardware '{hardware}': add it to HARDWARE or pass "
+                 f"--app-code/--compatible (read them from the unit's stock Web UI)")
+
     build = os.path.join(variant_dir, "build")
     desc_path = os.path.join(build, "project_description.json")
     if not os.path.isfile(desc_path):
@@ -73,7 +103,7 @@ def main():
     if missing:
         sys.exit("missing build outputs:\n  " + "\n  ".join(missing))
 
-    stem = f"automatous-io-shelly-1-gen4-{variant}-v{version}-ota"
+    stem = f"automatous-io-{hardware}-{variant}-v{version}-ota"
     zip_out = os.path.join(variant_dir, f"{stem}.zip")
 
     with tempfile.TemporaryDirectory() as tmp:
@@ -88,7 +118,7 @@ def main():
 
         now = datetime.datetime.now(datetime.timezone.utc)
         manifest = {
-            "name": APP_CODE,
+            "name": app_code,
             "platform": PLATFORM,
             "version": MANIFEST_VER,
             "build_id": now.strftime("%Y%m%d-%H%M%S") + f"/{stem}",
@@ -101,7 +131,7 @@ def main():
                 "app":     part("app.bin", type="app", ptn="app_0", encrypt=ENCRYPT),
                 "fs":      part("fs.img", type="fs", ptn="fs_0", fs_size=FS_SIZE, encrypt=ENCRYPT),
             },
-            "compatible": COMPATIBLE,
+            "compatible": compatible,
         }
         manifest_path = os.path.join(tmp, "manifest.json")
         with open(manifest_path, "w") as f:
@@ -115,7 +145,7 @@ def main():
                 z.write(src_for[member], arcname=member)
 
     print(f"Created {os.path.basename(zip_out)} ({os.path.getsize(zip_out) / 1024 / 1024:.1f} MB)")
-    print(f"  {variant} v{version}, manifest name={APP_CODE}, version={MANIFEST_VER}")
+    print(f"  {variant} v{version}, manifest name={app_code}, version={MANIFEST_VER}")
 
 
 if __name__ == "__main__":

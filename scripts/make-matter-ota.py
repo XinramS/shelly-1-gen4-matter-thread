@@ -20,6 +20,8 @@ Build a Matter OTA image (.ota) from a Gen4 variant's build output.
 Point it at a variant directory (defaults to the current one):
 
     python3 scripts/make-matter-ota.py source/shelly-1-gen4/opener
+    python3 scripts/make-matter-ota.py source/shelly-1pm-gen4/outlet
+    python3 scripts/make-matter-ota.py source/shelly-1-mini-gen4/outlet
 
 Every field that the device matches against is read from the build:
 
@@ -32,7 +34,8 @@ Every field that the device matches against is read from the build:
     old version, see the mismatch, and roll back.
 
 It wraps build/<variant>.bin with the upstream Matter ota_image_tool.py and writes
-automatous-io-shelly-1-gen4-<variant>-v<version>.ota next to the build.
+automatous-io-<hardware>-<variant>-v<version>.ota next to the build, where <hardware>
+is the source/<hardware> directory the variant lives in.
 
 Run it in the same esp-matter environment you build in. ota_image_tool.py is
 located in the connectedhomeip checkout via $ESP_MATTER_PATH (or set $OTA_IMAGE_TOOL
@@ -73,6 +76,7 @@ def find_ota_image_tool():
 
 def main():
     variant_dir = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else ".")
+    hardware = os.path.basename(os.path.dirname(variant_dir))
     build = os.path.join(variant_dir, "build")
     desc = os.path.join(build, "project_description.json")
     if not os.path.isfile(desc):
@@ -91,7 +95,7 @@ def main():
     version = int(define(header, "CHIP_DEVICE_CONFIG_DEVICE_SOFTWARE_VERSION").split()[0], 0)
     version_str = define(header, "CHIP_DEVICE_CONFIG_DEVICE_SOFTWARE_VERSION_STRING").split('"')[1]
 
-    out = os.path.join(variant_dir, f"automatous-io-shelly-1-gen4-{variant}-v{version_str}.ota")
+    out = os.path.join(variant_dir, f"automatous-io-{hardware}-{variant}-v{version_str}.ota")
 
     cmd = [sys.executable, find_ota_image_tool(), "create",
            "-v", f"0x{vid:04X}", "-p", f"0x{pid:04X}",
