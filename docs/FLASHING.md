@@ -59,8 +59,9 @@ The fastest way to install this firmware is the Shelly web UI, over your network
 1. Download the variant's web UI package, `automatous-io-shelly-1-gen4-{variant}-vX.Y.Z-ota.zip` from the [latest release](../../../releases/latest). This is the `.zip`, not the `.bin`.
 2. Open the Shelly's web UI in a browser at its IP address on your network.
 3. In the device's firmware settings, choose to install firmware from a file and select the `.zip` you downloaded.
-4. Confirm the update. The device flashes the new firmware and reboots into BLE commissioning mode, and the LED will rapidly blink. If it does not reboot automatically, remove and reapply power. Depending on the NVS state, you may also need to [factory reset](COMMISSIONING.md#factory-reset) the Shelly to get it into BLE commissioning mode by holding the onboard relay button for several seconds.
-5. Continue to [Commissioning](COMMISSIONING.md).
+4. Confirm the update. The device flashes the new firmware and reboots into BLE commissioning mode, and the LED will rapidly blink. If it does not reboot automatically, remove and reapply power. 
+5. [Factory reset](COMMISSIONING.md#factory-reset) the Shelly by holding the button for 10 seconds, then release. The device will reboot and the LED will rapidly blink again, indicating it is ready to commission. ⚠️ Do not skip this step. The previous firmware leaves data on the device that will cause Matter OTA updates to silently fail. Factory reset wipes this data. If you skip it and commission anyway, you will need to factory reset and recommission later to fix OTA updates.
+6. Continue to [Commissioning](COMMISSIONING.md).
 
 ---
 
