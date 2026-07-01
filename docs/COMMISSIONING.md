@@ -132,6 +132,7 @@ Hold the onboard relay button for several seconds. On this firmware that clears 
 - [Updating](UPDATING.md) — keeping a device current after flashing
 - [Power Consumption](POWER.md) — measured draw and the Thread Router design choice
 - [Building from Source](BUILDING.md) — compiling the firmware yourself
+- [GPIO Map](GPIO.md) — ESP-Shelly-C68F pin assignments for Gen4 devices
 - [Certification](CERTIFICATION.md) — uncertified status and test credentials
 - [Roadmap](ROADMAP.md) — current known limitations and planned work
 - [Contributing](CONTRIBUTING.md) — reporting bugs and the firmware filename convention

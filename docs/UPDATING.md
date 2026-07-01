@@ -102,6 +102,7 @@ If you build from source and have a UART adapter on the device, `idf.py flash` u
 - [Commissioning](COMMISSIONING.md) — pairing the device and reading the status LED
 - [Power Consumption](POWER.md) — measured draw and the Thread Router design choice
 - [Building from Source](BUILDING.md) — compiling the firmware yourself
+- [GPIO Map](GPIO.md) — ESP-Shelly-C68F pin assignments for Gen4 devices
 - [Certification](CERTIFICATION.md) — uncertified status and test credentials
 - [Roadmap](ROADMAP.md) — current known limitations and planned work
 - [Contributing](CONTRIBUTING.md) — reporting bugs and the firmware filename convention

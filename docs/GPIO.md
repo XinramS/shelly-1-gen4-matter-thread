@@ -1,0 +1,59 @@
+# GPIO Map
+
+**[README](../README.md)** > **GPIO Map** · [Report an issue](../../../issues/new)
+
+The Gen4 devices are built on the ESP-Shelly-C68F, a Shelly module that carries an Espressif ESP32-C6 with 8MB of flash. The module is common across the Gen4 line, but the pins Shelly wires to the relay, button, switch input, status LED, etc. differ by device.
+
+This page records those pin assignments so that anyone porting this or any other firmware do not have to flash and observe to find them or trust existing incorrect documentation available online.
+
+Pins listed as confirmed were verified on real hardware. Pins listed as `GPIOnn` are unverified at this time.
+
+## Contents
+
+- [Shelly 1 Gen4](#shelly-1-gen4)
+- [Shelly 1PM Gen4](#shelly-1pm-gen4)
+- [Shelly 1 Mini Gen4](#shelly-1-mini-gen4)
+
+## Shelly 1 Gen4
+
+| Function | GPIO |
+|---|---|
+| Relay | GPIO5 |
+| Switch input| GPIO10 |
+| Button (onboard) | GPIO4 |
+| Status LED | GPIO15 |
+
+## Shelly 1PM Gen4
+
+| Function | GPIO |
+|---|---|
+| Relay | GPIO4 |
+| Switch input | GPIO10 |
+| Button (onboard) | GPIO1 |
+| Status LED | GPIO11 |
+| Power meter (BL0942) | TX GPIO6, RX GPIO7 |
+| NTC | GPIO3 |
+
+## Shelly 1 Mini Gen4
+
+| Function | GPIO |
+|---|---|
+| Relay | GPIO10 |
+| Switch input | GPIONN |
+| Button (onboard) | GPIONN |
+| Status LED | GPIONN |
+| NTC | GPIONN |
+
+## Related documentation
+
+- [README](../README.md) — project overview and quick start
+- [Why Matter over Thread](WHY.md) — the rationale for Matter over Thread
+- [Flashing Guide](FLASHING.md) — wiring, backing up stock firmware, and flashing
+- [Reversibility](REVERSIBILITY.md) — warranty, factory keys, and how reversible flashing is
+- [Commissioning](COMMISSIONING.md) — pairing the device and reading the status LED
+- [Updating](UPDATING.md) — keeping a device current after flashing
+- [Building from Source](BUILDING.md) — compiling the firmware yourself
+- [Certification](CERTIFICATION.md) — uncertified status and test credentials
+- [Roadmap](ROADMAP.md) — current known limitations and planned work
+- [Contributing](CONTRIBUTING.md) — reporting bugs and the firmware filename convention
+- [Contributors](CONTRIBUTORS.md) — people who have helped move the project forward

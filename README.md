@@ -110,6 +110,7 @@ Most of it is in [`docs/`](docs/), with build [`scripts/`](scripts/), the change
 - [Updating](docs/UPDATING.md) — keeping a device current after flashing
 - [Power Consumption](docs/POWER.md) — measured draw and the Thread Router design choice
 - [Building from Source](docs/BUILDING.md) — compiling the firmware yourself
+- [GPIO Map](docs/GPIO.md) — ESP-Shelly-C68F pin assignments for Gen4 devices
 - [Certification](docs/CERTIFICATION.md) — uncertified status and test credentials
 - [Roadmap](docs/ROADMAP.md) — current known limitations and planned work
 - [Contributing](docs/CONTRIBUTING.md) — reporting bugs and the firmware filename convention
