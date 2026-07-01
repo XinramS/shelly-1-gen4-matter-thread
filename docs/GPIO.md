@@ -16,6 +16,10 @@ Pins listed as confirmed were verified on real hardware. Pins listed as `GPIOnn`
 
 ## Shelly 1 Gen4
 
+Hardware Revision: v0.1.2
+
+Verified: May 2026
+
 | Function | GPIO |
 |---|---|
 | Relay | GPIO5 |
@@ -24,6 +28,10 @@ Pins listed as confirmed were verified on real hardware. Pins listed as `GPIOnn`
 | Status LED | GPIO15 |
 
 ## Shelly 1PM Gen4
+
+Hardware Revision: v0.1.2
+
+Verified: June 2026
 
 | Function | GPIO |
 |---|---|
@@ -35,6 +43,10 @@ Pins listed as confirmed were verified on real hardware. Pins listed as `GPIOnn`
 | NTC | GPIO3 |
 
 ## Shelly 1 Mini Gen4
+
+Hardware Revision: v0.1.2
+
+Verified: In Progress
 
 | Function | GPIO |
 |---|---|
