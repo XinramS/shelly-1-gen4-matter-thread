@@ -46,15 +46,15 @@ Verified: June 2026
 
 Hardware Revision: v0.1.2
 
-Verified: In Progress
+Verified: July 2026
 
 | Function | GPIO |
 |---|---|
 | Relay | GPIO10 |
-| Switch input | GPIONN |
-| Button (onboard) | GPIONN |
-| Status LED | GPIONN |
-| NTC | GPIONN |
+| Switch input | GPIO12 |
+| Button (onboard) | GPIO22 |
+| Status LED | GPIO5 |
+| NTC | GPIO4 |
 
 ## Related documentation
 
