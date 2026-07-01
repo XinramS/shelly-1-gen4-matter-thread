@@ -31,7 +31,7 @@ Pins listed as confirmed were verified on real hardware. Pins listed as `GPIOnn`
 | Switch input | GPIO10 |
 | Button (onboard) | GPIO1 |
 | Status LED | GPIO11 |
-| Power meter (BL0942) | TX GPIO6, RX GPIO7 |
+| Power meter (BL0942) | TX GPIO6, RX GPIO7, UART1 |
 | NTC | GPIO3 |
 
 ## Shelly 1 Mini Gen4
