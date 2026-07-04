@@ -19,6 +19,7 @@ If your contribution fits that bar and I missed it, open an issue and I will add
 | ElkanRoelen | Funded #2 Shelly 1 Mini Gen4 unit. |
 | [71z0](https://github.com/71z0) | Funded a Shelly 1PM Gen4 unit. |
 | Shelly USA | 2x each of Shelly 1, 1 Mini, 1PM, 1PM Mini, 2PM, Dimmer. |
+| [queesamor](https://github.com/queesamor) | Funded a Flood Gen4 unit. |
 
 ---
 
