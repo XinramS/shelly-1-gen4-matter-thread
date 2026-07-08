@@ -2,7 +2,7 @@
 
 **[README](../README.md)** > **Flashing Guide** · [Report an issue](../../../issues/new)
 
-This guide covers flashing the Automatous Matter over Thread firmware onto a Shelly 1 Gen4. There are two ways to flash:
+This guide covers flashing the Automatous Matter over Thread firmware onto a supported Shelly Gen4 device. There are two ways to flash:
 
 - **[Shelly web UI](#flash-with-the-shelly-web-ui)** — over the network, with no soldering and no UART adapter. The fastest path but it cannot back up the original firmware. Treat it as effectively one-way.
 - **USB-UART** — more setup, but it captures a full backup of the stock firmware first, keeping the device fully reversible. About 15 minutes: 5 minutes to wire up, 5–10 minutes to back up, and 1–2 minutes to flash.
@@ -44,7 +44,7 @@ Once the firmware is up and running, updates are applied through Home Assistant 
 
 ## Hardware revision
 
-Tested on several Shelly 1 Gen4s, hardware revision **v0.1.2** (printed on the PCB). Other revisions should work but have not been verified. If you have a different revision, please [open an issue](../../../issues/new) with your findings.
+Tested on several Shelly 1 Gen4s and Shelly 1 Mini Gen4s, all hardware revision **v0.1.2** (printed on the PCB). Other revisions should work but have not been verified. If you have a different revision, please [open an issue](../../../issues/new) with your findings.
 
 ---
 
@@ -56,7 +56,7 @@ The fastest way to install this firmware is the Shelly web UI, over your network
 
 > **The device must be in its normal WiFi mode**, reachable on your WiFi network, and running recent stock firmware (verified on both 1.7.0 and 1.7.5).
 
-1. Download the variant's web UI package, `automatous-io-shelly-1-gen4-{variant}-vX.Y.Z-ota.zip` from the [latest release](../../../releases/latest). This is the `.zip`, not the `.bin`.
+1. Download the web UI package for your device and variant, `automatous-io-{hardware}-{variant}-vX.Y.Z-ota.zip`, from the [latest release](../../../releases/latest). This is the `.zip`, not the `.bin`.
 2. Open the Shelly's web UI in a browser at its IP address on your network.
 3. In the device's firmware settings, choose to install firmware from a file and select the `.zip` you downloaded.
 4. Confirm the update. The device flashes the new firmware and reboots into BLE commissioning mode, and the LED will rapidly blink. If it does not reboot automatically, remove and reapply power. 
@@ -68,6 +68,8 @@ The fastest way to install this firmware is the Shelly web UI, over your network
 ## Flash with USB-UART
 
 The USB-UART method is more involved. It needs a USB-UART adapter and a few minutes of wiring but it backs up the original firmware first and keeps the device fully reversible. Everything below, from wiring through flashing and restoring, is part of this method.
+
+The wiring, pinout, and photos in this section are the Shelly 1 Gen4's 7-pin programming header. The Shelly 1 Mini Gen4 exposes different programming pads, but the flash mode, backup, and esptool steps are the same once wired.
 
 ---
 

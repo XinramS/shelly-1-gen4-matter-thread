@@ -17,7 +17,7 @@ This document explains why this firmware exists, how it compares to other Shelly
 
 ## Repurposing the Zigbee radio
 
-The Shelly 1 Gen4 ships with an ESP32-C6 whose 802.15.4 radio can run either Thread or Zigbee. Stock firmware uses that radio for Zigbee. Stock firmware also supports Matter, but over WiFi, so the Thread capability of the radio goes unused. Shelly has stated they have no plans to add Thread support.
+Shelly Gen4 devices ship with an ESP-Shelly-C68F (ESP32-C6) whose 802.15.4 radio can run either Thread or Zigbee. Stock firmware uses that radio for Zigbee. Stock firmware also supports Matter, but over WiFi, so the Thread capability of the radio goes unused. Shelly has stated they have no plans to add Thread support.
 
 This firmware reconfigures the 802.15.4 radio to run Thread through OpenThread, which unlocks Matter over Thread on hardware you already own. Nothing about the hardware changes. The radio was always capable of Thread, and this firmware simply uses it that way.
 
@@ -55,7 +55,7 @@ This project began because reliable smart home devices were needed in a Sprinter
 
 ## Waiting for official Shelly support
 
-If you would rather not flash third-party firmware, another option is to wait for official support and ask Shelly to add it. Shelly currently has no plans for Thread, but they track it as a feature request and have said that enough requests could move it onto their roadmap. You can submit a request through Shelly's feature proposal form: [Request Thread support from Shelly](https://support.shelly.cloud/en/support/tickets/new?ticket_form=devices_and_features_proposal_archive).
+If you would rather not flash third-party firmware or void your warranty, another option is to wait for official support and ask Shelly to add it. Shelly currently has no plans for Thread, but they track it as a feature request and have said that enough requests could move it onto their roadmap. You can submit a request through Shelly's feature proposal form: [Request Thread support from Shelly](https://support.shelly.cloud/en/support/tickets/new?ticket_form=devices_and_features_proposal_archive).
 
 ---
 

@@ -2,9 +2,9 @@
 
 **[README](../README.md)** > **Updating** · [Report an issue](../../../issues/new)
 
-This guide covers updating a Shelly 1 Gen4 that is already running the Automatous firmware v2.0.0 and above. There are three paths, and the right one depends on whether you want to keep the device's Matter commissioning or not. If you have not flashed the firmware yet, start with the [Flashing Guide](FLASHING.md).
+This guide covers updating a supported Shelly Gen4 device that is already running the Automatous firmware with Matter OTA support. There are three paths, and the right one depends on whether you want to keep the device's Matter commissioning or not. If you have not flashed the firmware yet, start with the [Flashing Guide](FLASHING.md).
 
-If your device is running an Automatous build earlier than v2.0.0, update it with a one-time full reflash over [UART](FLASHING.md#flash-with-usb-uart). The partition layout changed in v2.0.0; this one step erases commissioning and needs to be re-commissioned afterward. From v2.0.0 onward this requirement no longer applies, and further updates are delivered via OTA.
+If your Shelly 1 Gen4 is running an Automatous build earlier than v2.0.0, update it with a one-time full reflash over [UART](FLASHING.md#flash-with-usb-uart). The partition layout changed in v2.0.0; this one step erases commissioning and needs to be re-commissioned afterward. From v2.0.0 onward this requirement no longer applies, and further updates are delivered via OTA. The Shelly 1 Mini Gen4 has had the OTA-capable layout since its first release.
 
 ---
 
@@ -49,7 +49,7 @@ Enabling it also points the server at its OTA folder, `/addon_configs/core_matte
 
 ### 2. Get the OTA image
 
-Download the variant's `.ota` from the [latest release](../../../releases/latest), or [build it yourself](#building-the-ota-image). The image is named `automatous-io-shelly-1-gen4-{variant}-vX.Y.Z.ota`. Its version must be higher than what the device is running, or the server has nothing newer to offer.
+Download the `.ota` for your device and variant from the [latest release](../../../releases/latest), or [build it yourself](#building-the-ota-image). The image is named `automatous-io-{hardware}-{variant}-vX.Y.Z.ota`. Its version must be higher than what the device is running, or the server has nothing newer to offer.
 
 ### 3. Place the image
 
@@ -89,7 +89,7 @@ If you build from source and have a UART adapter on the device, `idf.py flash` u
 
 ## Building the OTA image
 
-`scripts/make-matter-ota.py` wraps a variant's built application as a Matter `.ota`, reading the vendor and product ID from the build's `sdkconfig` and the software version from `CHIPProjectConfig.h`; the image always matches the firmware it came from and can only target the variant it was built for. See [Building from Source](BUILDING.md#build-the-release-artifacts).
+`scripts/make-matter-ota.py` wraps a variant's built application as a Matter `.ota`, reading the vendor and product ID from the build's `sdkconfig` and the software version from `CHIPProjectConfig.h`; the image always matches the firmware it came from and can only target the device and variant it was built for. See [Building from Source](BUILDING.md#build-the-release-artifacts).
 
 ---
 

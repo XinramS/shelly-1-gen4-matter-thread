@@ -1,4 +1,4 @@
-# Shelly 1 Gen4 — Matter over Thread
+# Shelly Gen4 — Matter over Thread
 
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Release](https://img.shields.io/github/v/release/automatous-io/shelly-1-gen4-matter-thread)](../../releases/latest)
@@ -9,7 +9,7 @@
 
 > **⚠️ Disclaimer.** Installing this firmware voids your Shelly warranty, and Shelly cannot provide technical support for a device running third-party code. It removes the factory keys that enable Shelly Cloud and official OTA updates. Treat flashing as one-way unless you keep the full-chip backup you make before flashing. Incorrect flashing can brick your device, so always back up your original firmware before proceeding if reversibility is important to you. You assume all responsibility for any damage, data loss, or device failure. This project is not affiliated with Shelly, Allterco Robotics, CSA, or Espressif Systems. See [Warranty, Factory Keys, and Reversibility](docs/REVERSIBILITY.md).
 
-The first third-party open source Matter over Thread firmware for the Shelly 1 Gen4. It works natively with Apple Home, Google Home, Alexa, and Home Assistant. No Shelly app, no cloud, no WiFi. The Gen4's ESP32-C6 has an 802.15.4 radio that stock firmware uses for Zigbee. Stock firmware also supports Matter over WiFi. This firmware reconfigures the 802.15.4 radio to run Thread, which unlocks Matter over Thread.
+The first third-party open source Matter over Thread firmware for Shelly Gen4 devices. It works natively with Apple Home, Google Home, Alexa, and Home Assistant. No Shelly app, no cloud, no WiFi. The Gen4 line's ESP-Shelly-C68F (ESP32-C6) has an 802.15.4 radio that stock firmware uses for Zigbee. Stock firmware also supports Matter over WiFi. This firmware reconfigures the 802.15.4 radio to run Thread, which unlocks Matter over Thread.
 
 <p align="center">
   <img src="docs/images/apple-home-device-info-v1.0.0.png" alt="Shelly 1 Gen4 running this firmware in Apple Home, showing manufacturer, model, and firmware version" width="300">
@@ -21,6 +21,7 @@ The first third-party open source Matter over Thread firmware for the Shelly 1 G
 
 ## Contents
 
+- [Supported devices](#supported-devices)
 - [Variants](#variants)
 - [Quick start](#quick-start)
 - [Features](#features)
@@ -28,10 +29,24 @@ The first third-party open source Matter over Thread firmware for the Shelly 1 G
 - [Documentation](#documentation)
 - [Repository layout](#repository-layout)
 - [Why?](#why)
+- [Waiting for official Shelly support](#waiting-for-official-shelly-support)
 - [About](#about)
 - [In the wild](#in-the-wild)
 - [Other projects from Automatous](#other-projects-from-automatous)
 - [License](#license)
+
+---
+
+## Supported devices
+
+Each supported device has its own firmware builds under [`source/`](source/).
+
+| Device | Variants | Status |
+|---|---|---|
+| Shelly 1 Gen4 | Light, Outlet, Opener, Light Switch | Released |
+| Shelly 1 Mini Gen4 | Outlet | Released |
+
+More Gen4 devices are planned. See the [Roadmap](docs/ROADMAP.md).
 
 ---
 
@@ -41,10 +56,12 @@ Matter device types are declared by the firmware at flash time and cannot be cha
 
 | Variant | Matter device type | Relay behavior | Good for |
 |---|---|---|---|
-| Light | On/Off Light *(shown as a light)* | Latching. Holds on or off until changed. | Lights and lighting circuits. |
-| Outlet | On/Off Plug-in Unit *(shown as an outlet)* | Latching. Holds on or off until changed. | Outlets, plug-in appliances, fans, heaters, pumps, and other set-and-hold loads. |
+| Light | On/Off Light *(shown as only a light)* | Latching. Holds on or off until changed. | Lights and lighting circuits. |
+| Outlet | On/Off Plug-in Unit *(shown as an outlet, switch, fan, light)* | Latching. Holds on or off until changed. | Outlets, plug-in appliances, fans, heaters, pumps, lights, and other set-and-hold loads. |
 | Opener | On/Off Plug-in Unit + Contact Sensor | Momentary pulse, roughly 500ms. | Garage door openers, gates, doorbells, and other pulse-activated devices. |
 | Light Switch | On/Off Light + On/Off Light Switch | Latching, but the SW terminal is detached from the relay. | Repurposing the wall switch to control other Matter devices through a binding, while the local relay runs independently. |
+
+All four variants are available for the Shelly 1 Gen4. The Shelly 1 Mini Gen4 ships the Outlet variant, with an added temperature sensor endpoint.
 
 Light and Outlet are electrically identical. Both latch and hold state, and both keep the SW terminal as a physical wall toggle. They differ only in the Matter device type they report, which sets how your smart home app names, displays, and voice-controls the device, as a light or as an outlet. Some apps let you recategorize after pairing. Others fix the icon, label, and automations to the reported type, which cannot change after commissioning. Pick the variant that matches the load you wired, so the controls read the way you expect.
 
@@ -60,7 +77,7 @@ The Light Switch variant, contributed by [Tomas McGuinness](https://github.com/t
 
 Flash via the Shelly web UI over your WiFi network, no UART adapter required. This is the fastest way to flash but it cannot create a backup of the stock firmware and should be considered one-way. See [Reversibility](docs/REVERSIBILITY.md).
 
-1. [Download the latest release](../../releases/latest) and grab the web UI package for your preferred [variant](#variants).
+1. [Download the latest release](../../releases/latest) and grab the web UI package for your [device](#supported-devices) and preferred [variant](#variants).
 2. [Install it through the Shelly web UI](docs/FLASHING.md#flash-with-the-shelly-web-ui).
 3. [Commission](docs/COMMISSIONING.md) with your smart home app.
 
@@ -80,6 +97,7 @@ Once it is up and running, [updates are available](docs/UPDATING.md) through Hom
 - Factory reset via long press of the onboard relay button.
 - Full Thread Device mode. Adds a Thread Router to your mesh for other devices.
 - Multi-fabric. Commission to multiple ecosystems at once, with state synced across all of them.
+- Temperature sensor endpoint reporting the device's internal temperature.
 
 ---
 
@@ -116,7 +134,7 @@ Most of it is in [`docs/`](docs/), with build [`scripts/`](scripts/), the change
 - [Contributing](docs/CONTRIBUTING.md) — reporting bugs and the firmware filename convention
 - [Contributors](docs/CONTRIBUTORS.md) — people who have helped move the project forward
 - [Security policy](SECURITY.md) — reporting a vulnerability and how issues are triaged
-- [Changelog](CHANGELOG.md) — per-variant release history
+- [Changelog](CHANGELOG.md) — release history by device and variant
 
 ---
 
@@ -129,20 +147,28 @@ shelly-1-gen4-matter-thread/
 ├── docs/              Documentation and the images it references.
 ├── scripts/           Build scripts that package the release artifacts.
 └── source/
-    └── shelly-1-gen4/
-        ├── light/         Matter On/Off Light, latching relay. Released.
-        ├── opener/        Matter On/Off Plug-in Unit + Contact Sensor, momentary pulse. Released.
-        ├── outlet/        Matter On/Off Plug-in Unit, latching relay, SW kept as a wall toggle. Released.
-        └── light-switch/  Matter On/Off Light Switch, detached relay with the SW input bound to other Matter devices. Released.
+    ├── shelly-1-gen4/
+    │   ├── light/         Matter On/Off Light, latching relay. Released.
+    │   ├── opener/        Matter On/Off Plug-in Unit + Contact Sensor, momentary pulse. Released.
+    │   ├── outlet/        Matter On/Off Plug-in Unit, latching relay, SW kept as a wall toggle. Released.
+    │   └── light-switch/  Matter On/Off Light Switch, detached relay with the SW input bound to other Matter devices. Released.
+    └── shelly-1-mini-gen4/
+        └── outlet/        Matter On/Off Plug-in Unit + Temperature Sensor, latching relay. Released.
 ```
 
-Each variant under `source/shelly-1-gen4/` is a self-contained ESP-IDF project. See [Building from Source](docs/BUILDING.md) for what each variant does and how to build it.
+Each variant directory under `source/` is a self-contained ESP-IDF project. See [Building from Source](docs/BUILDING.md) for what each variant does and how to build it.
 
 ---
 
 ## Why?
 
-The Shelly 1 Gen4's ESP32-C6 can run Thread, but stock firmware never uses it that way. This firmware repurposes the radio for Thread so the device speaks Matter directly to your smart home, with no WiFi, no cloud, and no bridge or controller required in between. For the full rationale, the comparison to ESPHome and Tasmota, and why Thread over WiFi, see [Why Matter over Thread](docs/WHY.md).
+The Shelly Gen4 line's ESP-Shelly-C68F (ESP32-C6) can run Thread, but stock firmware never uses it that way. This firmware repurposes the radio for Thread so the device speaks Matter directly to your smart home, with no WiFi, no cloud, and no bridge or controller required in between. For the full rationale, the comparison to ESPHome and Tasmota, and why Thread over WiFi, see [Why Matter over Thread](docs/WHY.md).
+
+---
+
+## Waiting for official Shelly support
+
+If you would rather not flash third-party firmware or void your warranty, another option is to wait for official support and ask Shelly to add it. Shelly currently has no plans for Thread, but they track it as a feature request and have said that enough requests could move it onto their roadmap. You can submit a request through Shelly's feature proposal form: [Request Thread support from Shelly](https://support.shelly.cloud/en/support/tickets/new?ticket_form=devices_and_features_proposal_archive).
 
 ---
 
@@ -152,7 +178,7 @@ This firmware was created from inside an old Dodge Sprinter T1N named Mabel, par
 
 I put in many sleepless nights obsessing over Thread support, which kickstarted me into writing custom firmware and testing with ESP-IDF, ESP-Matter, and ESPHome examples. That meant figuring out Shelly's custom partition offsets, the GPIO quirks specific to this device, and getting Matter over Thread commissioning working on non-devkit hardware.
 
-If it saved you the same headache, consider leaving a ⭐ on the repo. It helps the project show up in GitHub search and signals to other Shelly 1 Gen4 owners that this firmware exists and works. If you would like to support the work directly, you can [buy me a coffee](https://buymeacoffee.com/automatous.io).
+If it saved you the same headache, consider leaving a ⭐ on the repo. It helps the project show up in GitHub search and signals to other Shelly Gen4 owners that this firmware exists and works. If you would like to support the work directly, you can [buy me a coffee](https://buymeacoffee.com/automatous.io).
 
 ---
 

@@ -41,14 +41,16 @@ The repository organizes firmware by product and variant:
 
 ```
 source/
-└── shelly-1-gen4/
-    ├── light/           # Matter On/Off Light, latching relay (released)
-    ├── opener/          # Matter On/Off Plug-in Unit + Contact Sensor, momentary pulse (released)
-    ├── outlet/          # Matter On/Off Plug-in Unit, latching relay, SW kept as a wall toggle (released)
-    └── light-switch/    # Matter On/Off Light Switch, detached relay + SW input bound to other Matter devices (released)
+├── shelly-1-gen4/
+│   ├── light/           # Matter On/Off Light, latching relay (released)
+│   ├── opener/          # Matter On/Off Plug-in Unit + Contact Sensor, momentary pulse (released)
+│   ├── outlet/          # Matter On/Off Plug-in Unit, latching relay, SW kept as a wall toggle (released)
+│   └── light-switch/    # Matter On/Off Light Switch, detached relay + SW input bound to other Matter devices (released)
+└── shelly-1-mini-gen4/
+    └── outlet/          # Matter On/Off Plug-in Unit + Temperature Sensor, latching relay (released)
 ```
 
-Each variant is a self-contained ESP-IDF project. Build commands run from inside the variant directory. The examples below build the `light` variant; to build a different variant, substitute its directory in the `cd` command.
+Each variant is a self-contained ESP-IDF project. Build commands run from inside the variant directory. The examples below build the Shelly 1 Gen4 `light` variant; to build a different one, substitute its hardware and variant directories in the `cd` command.
 
 ---
 
@@ -102,9 +104,9 @@ Each install and update path needs a different packaged artifact, and all three 
 
 | Artifact | Path it serves | Built with |
 |---|---|---|
-| `automatous-io-shelly-1-gen4-{variant}-vX.Y.Z.bin` | UART / ESPConnect full install | `esptool merge_bin` |
-| `automatous-io-shelly-1-gen4-{variant}-vX.Y.Z-ota.zip` | Shelly web UI install | `scripts/make-webui-ota-zip.py` |
-| `automatous-io-shelly-1-gen4-{variant}-vX.Y.Z.ota` | Matter OTA update | `scripts/make-matter-ota.py` |
+| `automatous-io-{hardware}-{variant}-vX.Y.Z.bin` | UART / ESPConnect full install | `esptool merge_bin` |
+| `automatous-io-{hardware}-{variant}-vX.Y.Z-ota.zip` | Shelly web UI install | `scripts/make-webui-ota-zip.py` |
+| `automatous-io-{hardware}-{variant}-vX.Y.Z.ota` | Matter OTA update | `scripts/make-matter-ota.py` |
 
 The examples below build the `light` variant; for another, point the script at its directory or substitute its name.
 
@@ -131,7 +133,7 @@ The `.zip` that installs through the Shelly web UI. Run it from the repository r
 python3 scripts/make-webui-ota-zip.py source/shelly-1-gen4/light
 ```
 
-It reads the variant and version from the build, bundles the bootloader, partition table, otadata, and application with an empty filesystem image, and writes `automatous-io-shelly-1-gen4-{variant}-vX.Y.Z-ota.zip` next to the build.
+It reads the variant and version from the build, bundles the bootloader, partition table, otadata, and application with an empty filesystem image, and writes `automatous-io-{hardware}-{variant}-vX.Y.Z-ota.zip` next to the build.
 
 ### Matter OTA image
 
@@ -141,7 +143,7 @@ The `.ota` served to commissioned devices through Home Assistant. Run it in the 
 python3 scripts/make-matter-ota.py source/shelly-1-gen4/light
 ```
 
-It reads the vendor and product ID from the build's `sdkconfig` and the software version from `CHIPProjectConfig.h`; the image always matches the firmware it came from and can only target the variant it was built for. The output is `automatous-io-shelly-1-gen4-{variant}-vX.Y.Z.ota`. See [Updating](UPDATING.md) for how to serve it.
+It reads the vendor and product ID from the build's `sdkconfig` and the software version from `CHIPProjectConfig.h`; the image always matches the firmware it came from and can only target the device and variant it was built for. The output is `automatous-io-{hardware}-{variant}-vX.Y.Z.ota`. See [Updating](UPDATING.md) for how to serve it.
 
 ---
 

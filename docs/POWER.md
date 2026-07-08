@@ -16,12 +16,12 @@ A common assumption is that Matter over Thread devices use significantly less po
 
 ## Measured consumption
 
-Measured at 12V DC input, the Shelly itself, with no load on the relay. The bench uses 12V DC because this firmware was developed and tested in an offgrid van electrical system. The Shelly 1 Gen4 also runs on AC mains, where the milliamp figures are much lower for the same power, so compare the wattage, not the current, when reasoning about an AC install.
+Measured on a Shelly 1 Gen4 at 12V DC input, the Shelly itself, with no load on the relay. The Shelly 1 Mini Gen4 has not been measured yet. The bench uses 12V DC because this firmware was developed and tested in an offgrid van electrical system. The Shelly 1 Gen4 also runs on AC mains, where the milliamp figures are much lower for the same power, so compare the wattage, not the current, when reasoning about an AC install.
 
 | Firmware | Relay off | Relay on |
 |---|---|---|
 | Automatous (v1.2.1, Matter over Thread) | 26 mA / 0.3W | 43 mA / 0.5W |
-| Stock Shelly (Matter over WiFi) | 29 mA / 0.3W | 44 mA / 0.5W |
+| Stock Shelly 1 Gen4 (Matter over WiFi) | 29 mA / 0.3W | 44 mA / 0.5W |
 
 The numbers are nearly identical because both radios stay continuously awake. The Shelly's connected load, such as a light, fan, or appliance, adds to the relay-on numbers in a real installation.
 
