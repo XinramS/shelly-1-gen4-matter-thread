@@ -2,9 +2,9 @@
 
 **[README](../README.md)** > **Warranty, Factory Keys, and Reversibility** · [Report an issue](../../../issues/new)
 
-This page explains what installing third-party firmware does to a Shelly 1 Gen4, whether you can return the device to stock, and what that depends on.
+This page explains what installing third-party firmware does to a Shelly Gen4 device, whether you can return the device to stock, and what that depends on.
 
-> ⚠️ **Default assumption: treat flashing as one-way.** You can only restore the device to a fully functional factory state if you captured a full-chip backup over UART before flashing. Without that backup, flashing is irreversible. This is verified for the UART path and explained below. **Read this whole document before attempting to flash your Shelly.**
+> ⚠️ **Default assumption: treat flashing as one-way.** You can only restore the device to a fully functional factory state if you captured a full-chip backup over UART before flashing. Without that backup, flashing is irreversible. This is verified for the UART path and explained below. You are also voiding your warranty. **Read this whole document before attempting to flash your Shelly.**
 
 ---
 
@@ -69,7 +69,7 @@ For the exact backup and restore steps, see [Restoring stock firmware](FLASHING.
 
 > ⚠️ **Status: supported, and irreversible without a UART backup first.** This project ships a web UI package and documents installing it through the Shelly web UI. A web UI flash cannot be undone unless you captured a full-chip UART backup beforehand.
 
-Shelly's web UI installs firmware by uploading a file over the network, with no UART connection. This path is confirmed working on the Gen4 and verified on stock firmware 1.7.0 and 1.7.5. For the steps, see [Flash with the Shelly web UI](FLASHING.md#flash-with-the-shelly-web-ui).
+Shelly's web UI installs firmware by uploading a file over the network, with no UART connection. This path is confirmed working on the Shelly 1 Gen4 and Shelly 1 Mini Gen4 and verified on stock firmware 1.7.0 and 1.7.5. For the steps, see [Flash with the Shelly web UI](FLASHING.md#flash-with-the-shelly-web-ui).
 
 A web UI flash cannot read the chip before writing, so no full-chip backup can be made, and the factory keys cannot be saved. A device flashed this way cannot be returned to a fully functional stock state unless a UART backup was captured first.
 

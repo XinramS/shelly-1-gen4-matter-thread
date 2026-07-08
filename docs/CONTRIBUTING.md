@@ -41,7 +41,7 @@ If you want to work on something larger, open an issue first to talk through the
 
 For a suspected security vulnerability, an attacker-reachable flaw or a credential or key exposure, use private reporting as described in the [security policy](../SECURITY.md) rather than a public issue. For functional bugs, including fail-safe and reliability issues, open a [GitHub issue](../../../issues/new) with:
 
-- **Hardware:** Shelly 1 Gen4 PCB revision (silkscreened on the board), the variant, and the firmware version you're running.
+- **Hardware:** which Shelly device, its PCB revision (silkscreened on the board), the variant, and the firmware version you're running.
 - **Ecosystem:** Apple Home, Google Home, Alexa, or Home Assistant, and what provides Thread on your network (a Thread Border Router, or an iPhone 15 Pro or newer).
 - **What happened:** What you expected, what actually occurred, and steps to reproduce.
 - **Logs:** Serial monitor output at 115200 baud, especially anything around the failure point.
@@ -55,10 +55,10 @@ If your device won't commission, won't boot, or behaves unexpectedly after flash
 Release binaries follow this pattern.
 
 ```
-automatous-io-{model}-{variant}-{version}.bin
+automatous-io-{hardware}-{variant}-{version}.bin
 ```
 
-- `{model}` is the product. This repo targets `shelly-1-gen4`.
+- `{hardware}` is the device, matching its directory under `source/`: `shelly-1-gen4` or `shelly-1-mini-gen4`.
 - `{variant}` is the firmware build: `light`, `opener`, `outlet`, or `light-switch`. See [Building from Source](BUILDING.md#repository-structure) for what each variant does.
 - `{version}` is the release version, in the form `vX.Y.Z`.
 

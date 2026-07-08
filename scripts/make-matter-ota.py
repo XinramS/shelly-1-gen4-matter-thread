@@ -29,9 +29,10 @@ Every field that the device matches against is read from the build:
     CONFIG_DEVICE_PRODUCT_ID); an opener build can never get an outlet's PID.
     Matter OTA only ever offers it to the variant it was built for.
   - software version (number + string) from main/CHIPProjectConfig.h
-    (CHIP_DEVICE_CONFIG_DEVICE_SOFTWARE_VERSION[_STRING]). The .ota header always
-    matches the firmware's compiled version. A device won't apply it, boot the
-    old version, see the mismatch, and roll back.
+    (CHIP_DEVICE_CONFIG_DEVICE_SOFTWARE_VERSION[_STRING]). The script refuses
+    to package a build that predates the header (version string not compiled
+    into the .bin). The .ota header cannot claim a version its payload
+    does not carry.
 
 It wraps build/<variant>.bin with the upstream Matter ota_image_tool.py and writes
 automatous-io-<hardware>-<variant>-v<version>.ota next to the build, where <hardware>
@@ -94,6 +95,14 @@ def main():
     pid = sdkconfig_int(sdkconfig, "CONFIG_DEVICE_PRODUCT_ID")
     version = int(define(header, "CHIP_DEVICE_CONFIG_DEVICE_SOFTWARE_VERSION").split()[0], 0)
     version_str = define(header, "CHIP_DEVICE_CONFIG_DEVICE_SOFTWARE_VERSION_STRING").split('"')[1]
+
+    # The version above is read from source, but the payload comes from
+    # build/. A build that predates a version bump would produce an .ota
+    # whose header claims a version its payload does not carry. The device
+    # flashes it, reboots, reports the old version, and the controller
+    # marks the update failed.
+    if version_str.encode() not in open(app_bin, "rb").read():
+        sys.exit(f"version {version_str} not found in {app_bin} — rebuild before packaging")
 
     out = os.path.join(variant_dir, f"automatous-io-{hardware}-{variant}-v{version_str}.ota")
 
