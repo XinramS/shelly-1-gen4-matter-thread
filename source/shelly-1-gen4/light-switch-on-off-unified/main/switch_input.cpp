@@ -36,6 +36,7 @@ static const char *TAG = "switch_input";
 // Defined in app_main.cpp. Used to know which Matter endpoint's OnOff
 // attribute to toggle when the switch input fires.
 extern uint16_t switch_endpoint_id;
+extern uint16_t light_endpoint_id; 
 
 // Shelly 1 Gen4 wall switch input.
 //
@@ -64,22 +65,47 @@ static void switch_input_task(void *arg)
     while (true) {
         uint32_t io_num;
         if (xQueueReceive(switch_evt_queue, &io_num, portMAX_DELAY)) {
-            // 50ms debounce
             vTaskDelay(pdMS_TO_TICKS(50));
-
-            // Drain any additional events during debounce
             while (xQueueReceive(switch_evt_queue, &io_num, 0) == pdTRUE) {}
 
-            ESP_LOGI(TAG, "SW input changed. Sending Toggle command");
+            // Read current relay/light state and compute the new explicit state.
+            // No stack lock needed here — same as app_driver_attribute_update(),
+            // which calls relay_set() without holding one.
+            attribute_t *light_attr = attribute::get(light_endpoint_id, OnOff::Id,
+                                                       OnOff::Attributes::OnOff::Id);
+            esp_matter_attr_val_t val = esp_matter_invalid(NULL);
+            attribute::get_val(light_attr, &val);
+            bool new_state = !val.val.b;
+
+            ESP_LOGI(TAG, "SW input changed. Setting local relay and bound peer to %s",
+                     new_state ? "ON" : "OFF");
+
+            // 1. Drive the local relay to the explicit new state.
+            val.val.b = new_state;
+            attribute::update(light_endpoint_id, OnOff::Id,
+                              OnOff::Attributes::OnOff::Id, &val);
+
+            // 2. Mirror the same state onto the switch endpoint's own OnOff attribute.
+            esp_matter_attr_val_t switch_val = esp_matter_invalid(NULL);
+            switch_val.val.b = new_state;
+            attribute::update(switch_endpoint_id, OnOff::Id,
+                              OnOff::Attributes::OnOff::Id, &switch_val);
+
+            // 3. Send an explicit On/Off (not Toggle) to whatever's bound to
+            //    switch_endpoint_id. Lock scope matches the original file's
+            //    behavior exactly: only around the binding-manager call.
             client::request_handle_t req_handle;
             req_handle.type = esp_matter::client::INVOKE_CMD;
             req_handle.command_path.mClusterId = OnOff::Id;
-            req_handle.command_path.mCommandId = OnOff::Commands::Toggle::Id;
+            req_handle.command_path.mCommandId = new_state
+                ? OnOff::Commands::On::Id
+                : OnOff::Commands::Off::Id;
+            {
+                lock::ScopedChipStackLock lock(portMAX_DELAY);
+                client::cluster_update(switch_endpoint_id, &req_handle);
+            }
 
-            lock::ScopedChipStackLock lock(portMAX_DELAY);
-            client::cluster_update(switch_endpoint_id, &req_handle);
-
-            ESP_LOGI(TAG, "Switch input toggled");
+            ESP_LOGI(TAG, "Switch input set to %s", new_state ? "ON" : "OFF");
         }
     }
 }
